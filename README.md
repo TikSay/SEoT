@@ -1,6 +1,6 @@
 # SEoT
 Østfold Husflidslag
-Prosjektet er basert å lage en ny og bedre løsning til applikasjonen.
+Prosjektet er basert på å lage en ny og bedre løsning til applikasjonen.
 
 Teamet:
 Sayo - Frontend,
