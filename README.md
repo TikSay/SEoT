@@ -11,8 +11,8 @@ Liam - Backend
 
 Teknologi
 Språk: Java
-Database: MYSQL
-Github
+Database: MySQL
+GitHub
 
 
 
