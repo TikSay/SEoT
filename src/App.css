@@ -21,6 +21,9 @@ body {
   padding: 20px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /*header*/
@@ -100,7 +103,7 @@ h2 {
 }
 
 /*siste nytt*/
-.news-pic-temp{
+.news-pic-temp {
   width: 100%;
   height: 300px;
   background-color: var(--primary-red);
@@ -306,87 +309,3 @@ footer::before {
 .register-link a:hover {
   text-decoration: underline;
 }
-
-.login-main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-}
-
-.login-box {
-  background-color: var(--card-bg);
-  padding: 40px;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.login-box h2 {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.input-group {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.input-group label {
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.input-group input {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  font-family: var(--font-main);
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: var(--primary-red);
-}
-
-.login-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  margin-bottom: 30px;
-}
-
-.login-options a {
-  color: var(--primary-red);
-  text-decoration: none;
-}
-
-.login-options a:hover {
-  text-decoration: underline;
-}
-
-.login-btn {
-  width: 100%;
-}
-
-.register-link {
-  text-align: center;
-  margin-top: 25px;
-  font-size: 14px;
-}
-
-.register-link a {
-  color: var(--primary-red);
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
-}
-

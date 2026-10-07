@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 //Hvis du trenger info for å vite hvordan dette funker: her kan du lese om det: https://medium.com/@AnthonyBostic/creating-a-login-form-utilizing-react-hooks-da7d7685cbb6
 
-function Login() {
+function Login({setCurrentPage}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -46,13 +46,13 @@ function Login() {
                         <a href="#">Glemt passord?</a>
                     </div>
 
-                    <button type="submit" className="main-btn login-btn">
+                    <button type="submit" className="main-btn login-btn" onClick={(e) => {e.preventDefault(); setCurrentPage('profil');}}>
                         LOGG INN
                     </button>
                 </form>
 
                 <div className="register-link">
-                    Ikke medlem enda? <a href="#">Bli medlem her</a>
+                    Ikke medlem enda? <a href="#" onClick={(e) => {e.preventDefault(); setCurrentPage('registrer');}}>Bli medlem her</a>
                 </div>
             </div>
         </main>

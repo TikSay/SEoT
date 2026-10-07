@@ -1,6 +1,7 @@
 import './App.css';
 import { useState } from 'react';
 import Login from './Login';
+import Registrer from './Registrer';
 import husflidLogo from './assets/husflidlog.jpg';
 
 function App() {
@@ -39,7 +40,7 @@ function App() {
           </nav>
         </header>
 
-      {currentPage === 'home' ? (
+      {currentPage === 'home' && (
         <main>
           <section className="left-column">
             <h2>Siste Nytt</h2>
@@ -50,7 +51,7 @@ function App() {
               <p>For alle som liker å skape med hendene, fordype seg i tradisjonshåndverk eller lære noe nytt i
                 fellesskap med andre så kan du bli medlem i et av våre lokallag!</p>
             </div>
-            <button className="main-btn">BLI MEDLEM</button>
+            <button className="main-btn" onClick={() => setCurrentPage('registrer')}>BLI MEDLEM</button>
           </section>
 
           <section className="right-column">
@@ -111,9 +112,9 @@ function App() {
             </div>
           </section>
         </main>
-      ) : (
-          <Login/>
-          )}
+      )}
+        {currentPage === 'login' && <Login setCurrentPage={setCurrentPage} />}
+        {currentPage === 'registrer' && <Registrer setCurrentPage={setCurrentPage}/> }
 
         <footer>
           <div className="footer-logo">
