@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 function Registrer({setCurrentPage}) {
-    const [name, setName] = useState('');
+    const [fornavn, setFornavn] = useState('');
+    const [etternavn, setEtternavn] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,9 +25,14 @@ function Registrer({setCurrentPage}) {
             <div className="login-box">
                 <h2>Bli medlem</h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label>Navn</label>
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} required/>
+                    <div className="input-group side-by-side">
+                        <label>Fornavn
+                            <input type="text" value={fornavn} onChange={(e) => setFornavn(e.target.value)} required/>
+                        </label>
+
+                        <label>Etternavn
+                            <input type="text" value={etternavn} onChange={(e) => setEtternavn(e.target.value)} required/>
+                        </label>
                     </div>
                     <div className="input-group">
                         <label htmlFor="email">E-postadresse</label>
@@ -60,6 +66,21 @@ function Registrer({setCurrentPage}) {
                             required
                         />
                     </div>
+
+                    <div className="input-group">
+                        <label htmlFor="By">By adresse</label>
+                        <select className="by-options" name="By" required>
+                            <option value="fredrikstad husflidslag">Fredrikstad</option>
+                            <option value="halden husflidslag">Halden</option>
+                            <option value="hobøl husflidslag">Hobøl</option>
+                            <option value="indre østfold husflidslag">Indre Østfold</option>
+                            <option value="moss husflidslag">Moss</option>
+                            <option value="rygge husflidslag">Rygge</option>
+                            <option value="råde husflidslag">Råde</option>
+                            <option value="sarpsborg husflidslag">Sarpsborg</option>
+                        </select>
+                    </div>
+
                     <button type="submit" className="main-btn login-btn">REGISTRER DEG</button>
                 </form>
 

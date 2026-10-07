@@ -267,6 +267,11 @@ footer::before {
   font-size: 16px;
   font-family: var(--font-main);
 }
+.side-by-side {
+  display: flex;
+  flex-direction: row;
+  border-radius: 5px;
+}
 
 .input-group input:focus {
   outline: none;
@@ -279,6 +284,15 @@ footer::before {
   align-items: center;
   font-size: 14px;
   margin-bottom: 30px;
+}
+
+.by-options {
+  display: flex;
+  padding: 12px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: var(--font-main);
 }
 
 .login-options a {
