@@ -271,6 +271,16 @@ footer::before {
   display: flex;
   flex-direction: row;
   border-radius: 5px;
+  gap: 5px;
+}
+
+.side-by-side .input-group {
+  flex: 1;
+}
+
+.side-by-side input {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input-group input:focus {
