@@ -2,14 +2,18 @@ import { useState } from 'react';
 
 //Hvis du trenger info for å vite hvordan dette funker: her kan du lese om det: https://medium.com/@AnthonyBostic/creating-a-login-form-utilizing-react-hooks-da7d7685cbb6
 
-function Login({setCurrentPage}) {
+function Login({setCurrentPage, setIsLoggedIn}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Logget inn med:', { email, password });
+
+        setIsLoggedIn(true);
+        setCurrentPage('home');
     };
+
 
     return (
         //Hjelpemiddel når det kommer til å sette opp registrering og info endring i react: https://stackoverflow.com/questions/64063348/react-password-validation-onchange
@@ -46,7 +50,7 @@ function Login({setCurrentPage}) {
                         <a href="#">Glemt passord?</a>
                     </div>
 
-                    <button type="submit" className="main-btn login-btn" onClick={(e) => {e.preventDefault(); setCurrentPage('profil');}}>
+                    <button type="submit" className="main-btn login-btn">
                         LOGG INN
                     </button>
                 </form>
