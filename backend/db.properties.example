@@ -1,0 +1,6 @@
+# Copy this file to db.properties and fill in your own values.
+# db.properties is ignored by git — never commit real passwords.
+# Alternatively, set the environment variables DB_URL, DB_USER and DB_PASSWORD.
+db.url=jdbc:mysql://localhost:3306/sprint1
+db.user=root
+db.password=CHANGE_ME

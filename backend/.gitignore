@@ -1,0 +1,14 @@
+# Byggefiler fra Maven
+target/
+
+# Lokale databaseinnstillinger med passord, skal ALDRI committes
+db.properties
+src/main/resources/db.properties
+!db.properties.example
+
+# IntelliJ
+.idea/
+*.iml
+
+# macOS
+.DS_Store
