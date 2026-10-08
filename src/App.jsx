@@ -2,11 +2,14 @@ import './App.css';
 import { useState } from 'react';
 import Login from './Login';
 import Registrer from './Registrer';
+import Profil from './Profil';
 import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   return (
       <div className="container">
@@ -35,18 +38,22 @@ function App() {
             <div className="icon-item">
               <span><i className="fa-solid fa-calendar"></i></span>KALENDER
             </div>
-            <div className="icon-item" onClick={() => setCurrentPage('login')}>
+            <div className="icon-item">
               <span><i className="fa-solid fa-cart-shopping"></i></span>NETTBUTIKK
+            </div>
+            <div className="icon-item" onClick={() => setCurrentPage(isLoggedIn ? 'profil' : 'login')}>
+              <span><i className="fa-solid fa-user"></i></span>
+              {isLoggedIn ? 'MIN SIDE' : 'LOGG INN'}
             </div>
           </nav>
         </header>
 
-      {currentPage === 'home' && (
-        <main>
-          <section className="left-column">
-            <h2>Siste Nytt</h2>
-            <div className="news-pic-temp"></div>
-            <div className="news-text">
+        {currentPage === 'home' && (
+            <main>
+              <section className="left-column">
+                <h2>Siste Nytt</h2>
+                <div className="news-pic-temp"></div>
+                <div className="news-text">
               <p>Østfold Husflidslag ble stiftet 28.09.1932. Vår første bunad, Østfold kvinnebunad, ble lansert i 1936.
                 Deretter kom Østfold mannsbunad i 1990. Og Herregårdsbunad for kvinner ble lansert i 2015.</p>
               <p>For alle som liker å skape med hendene, fordype seg i tradisjonshåndverk eller lære noe nytt i
@@ -114,9 +121,18 @@ function App() {
           </section>
         </main>
       )}
-        {currentPage === 'login' && <Login setCurrentPage={setCurrentPage} />}
-        {currentPage === 'registrer' && <Registrer setCurrentPage={setCurrentPage}/> }
-        {currentPage === 'glemt-passord' && <GlemtPassord setCurrentPage={setCurrentPage} />}
+        {currentPage === 'login' && (
+            <Login setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
+        )}
+        {currentPage === 'registrer' && (
+            <Registrer setCurrentPage={setCurrentPage} />
+        )}
+        {currentPage === 'glemt-passord' && (
+            <GlemtPassord setCurrentPage={setCurrentPage} />
+        )}
+        {currentPage === 'profil' && (
+            <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
+        )}
 
         <footer>
           <div className="footer-logo">

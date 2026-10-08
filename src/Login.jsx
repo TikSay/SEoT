@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 //Hvis du trenger info for å vite hvordan dette funker: her kan du lese om det: https://medium.com/@AnthonyBostic/creating-a-login-form-utilizing-react-hooks-da7d7685cbb6
 
-function Login({setCurrentPage}) {
+function Login({setCurrentPage, setIsLoggedIn, setUser}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -16,11 +16,14 @@ function Login({setCurrentPage}) {
         });
         const result = await response.json();
         if (result.success) {
-            setCurrentPage('profil');
+            setUser(result.user);
+            setIsLoggedIn(true);
+            setCurrentPage('home');
         } else {
             alert(result.message);
         }
     };
+
 
     return (
         //Hjelpemiddel når det kommer til å sette opp registrering og info endring i react: https://stackoverflow.com/questions/64063348/react-password-validation-onchange
