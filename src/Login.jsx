@@ -8,7 +8,6 @@ function Login({setCurrentPage, setIsLoggedIn, setUser}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Logget inn med:', { email, password });
         const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
