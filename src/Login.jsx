@@ -6,9 +6,20 @@ function Login({setCurrentPage}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Logget inn med:', { email, password });
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+        const result = await response.json();
+        if (result.success) {
+            setCurrentPage('profil');
+        } else {
+            alert(result.message);
+        }
     };
 
     return (
@@ -43,10 +54,10 @@ function Login({setCurrentPage}) {
                         <label>
                             <input type="checkbox" name="remember"/> Husk meg
                         </label>
-                        <a href="#">Glemt passord?</a>
+                        <a href="#" onClick={(e) => {e.preventDefault(); setCurrentPage('glemt-passord');}}>Glemt passord?</a>
                     </div>
 
-                    <button type="submit" className="main-btn login-btn" onClick={(e) => {e.preventDefault(); setCurrentPage('profil');}}>
+                    <button type="submit" className="main-btn login-btn">
                         LOGG INN
                     </button>
                 </form>

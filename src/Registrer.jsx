@@ -7,7 +7,7 @@ function Registrer({setCurrentPage}) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         //*Ganske bra passord check https://stackoverflow.com/questions/51143800/how-to-set-match-password-in-react-js *//
@@ -15,8 +15,18 @@ function Registrer({setCurrentPage}) {
             alert("Passordet stemmer ikke");
             return;
         }
-        alert('Bruker opprettet');
-        setCurrentPage('login');
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fornavn, etternavn, email, password, lokallag: e.target.By.value }),
+        });
+        const result = await response.json();
+        if (result.success) {
+            alert('Bruker opprettet');
+            setCurrentPage('login');
+        } else {
+            alert(result.message);
+        }
 
     };
 

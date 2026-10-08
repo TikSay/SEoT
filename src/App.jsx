@@ -2,6 +2,7 @@ import './App.css';
 import { useState } from 'react';
 import Login from './Login';
 import Registrer from './Registrer';
+import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
 
 function App() {
@@ -115,6 +116,7 @@ function App() {
       )}
         {currentPage === 'login' && <Login setCurrentPage={setCurrentPage} />}
         {currentPage === 'registrer' && <Registrer setCurrentPage={setCurrentPage}/> }
+        {currentPage === 'glemt-passord' && <GlemtPassord setCurrentPage={setCurrentPage} />}
 
         <footer>
           <div className="footer-logo">
