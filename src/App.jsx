@@ -3,12 +3,13 @@ import { useState } from 'react';
 import Login from './Login';
 import Registrer from './Registrer';
 import Profil from './Profil';
+import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId] = useState('123') //Temp id før backend//
+  const [user, setUser] = useState(null);
 
   return (
       <div className="container">
@@ -121,13 +122,16 @@ function App() {
         </main>
       )}
         {currentPage === 'login' && (
-            <Login setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} />
+            <Login setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
         )}
         {currentPage === 'registrer' && (
             <Registrer setCurrentPage={setCurrentPage} />
         )}
+        {currentPage === 'glemt-passord' && (
+            <GlemtPassord setCurrentPage={setCurrentPage} />
+        )}
         {currentPage === 'profil' && (
-            <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} userId={userId} />
+            <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
         )}
 
         <footer>

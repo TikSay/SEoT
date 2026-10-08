@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logg inn - Østfolds Husflidslag</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <div class="logo-icon"><img src="imgs\husflidlog.jpg" alt="Østfolds Husflidslag Logo" style="width: 180px; height: auto;"></div>
+                <div class="logo-text">Østfolds Husflidslag</div>
+            </div>
+
+            <nav class="main-nav">
+                <a href="index.html">AKTUELT</a>
+                <a href="#">FAGSIDER</a>
+                <a href="#">KONTAKT OSS</a>
+            </nav>
+
+            <nav class="icon-nav">
+                <div class="icon-item">
+                    <span><i class="fa-solid fa-magnifying-glass"></i></span>SØK
+                </div>
+                <div class="icon-item">
+                    <span><i class="fa-solid fa-calendar"></i></span>KALENDER
+                </div>
+                <div class="icon-item">
+                    <span><i class="fa-solid fa-cart-shopping"></i></span>NETTBUTIKK
+                </div>
+            </nav>
+        </header>
+
+        <main class="login-main">
+            <div class="login-box">
+                <h2>Logg inn</h2>
+                <form action="/login" method="POST">
+                    <!-- login-error -->
+                    <div class="input-group">
+                        <label for="email">E-postadresse</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Passord</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <div class="login-options">
+                        <label>
+                            <input type="checkbox" name="remember"> Husk meg
+                        </label>
+                        <a href="#">Glemt passord?</a>
+                    </div>
+
+                    <button type="submit" class="main-btn login-btn">LOGG INN</button>
+                </form>
+                
+                <div class="register-link">
+                    Ikke medlem enda? <a href="register.html">Bli medlem her</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-logo"><img src="imgs\husflidlog.jpg" alt="Østfolds Husflidslag Logo" style="width: 180px; height: auto;"></div>
+        </footer>
+    </div>
+</body>
+</html>

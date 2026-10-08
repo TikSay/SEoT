@@ -1,0 +1,5 @@
+# schema.sql og migrations/ skal committes, men ikke dumper med ekte data
+dumps/
+*.dump
+*.sql.gz
+backup*.sql
