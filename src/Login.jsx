@@ -2,16 +2,25 @@ import { useState } from 'react';
 
 //Hvis du trenger info for å vite hvordan dette funker: her kan du lese om det: https://medium.com/@AnthonyBostic/creating-a-login-form-utilizing-react-hooks-da7d7685cbb6
 
-function Login({setCurrentPage, setIsLoggedIn}) {
+function Login({setCurrentPage, setIsLoggedIn, setUser}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Logget inn med:', { email, password });
-
-        setIsLoggedIn(true);
-        setCurrentPage('home');
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+        const result = await response.json();
+        if (result.success) {
+            setUser(result.user);
+            setIsLoggedIn(true);
+            setCurrentPage('home');
+        } else {
+            alert(result.message);
+        }
     };
 
 
@@ -47,7 +56,7 @@ function Login({setCurrentPage, setIsLoggedIn}) {
                         <label>
                             <input type="checkbox" name="remember"/> Husk meg
                         </label>
-                        <a href="#">Glemt passord?</a>
+                        <a href="#" onClick={(e) => {e.preventDefault(); setCurrentPage('glemt-passord');}}>Glemt passord?</a>
                     </div>
 
                     <button type="submit" className="main-btn login-btn">
