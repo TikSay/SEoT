@@ -5,6 +5,7 @@ import Registrer from './Registrer';
 import Profil from './Profil';
 import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
+import Kurskalender from "./Kurskalender.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -35,7 +36,7 @@ function App() {
             <div className="icon-item">
               <span><i className="fa-solid fa-magnifying-glass"></i></span>SØK
             </div>
-            <div className="icon-item">
+            <div className="icon-item" onClick={() => setCurrentPage('kurskalender')}>
               <span><i className="fa-solid fa-calendar"></i></span>KALENDER
             </div>
             <div className="icon-item">
@@ -76,8 +77,8 @@ function App() {
                     <div className="info-icon"><i className="fa-solid fa-info"></i></div>
                     <button className="btn-secondary">Til Påmelding</button>
                   </div>
-                </div>
               </div>
+            </div>
 
               <div className="card">
                 <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
@@ -132,6 +133,9 @@ function App() {
         )}
         {currentPage === 'profil' && (
             <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
+        )}
+        {currentPage === 'kurskalender' && (
+            <Kurskalender setCurrentPage={setCurrentPage}/>
         )}
 
         <footer>
