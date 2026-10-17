@@ -6,11 +6,18 @@ import Profil from './Profil';
 import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
 import Kurskalender from "./Kurskalender.jsx";
+import Paamelding from "./Påmeldning.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [valgtKurs, setValgtKurs] = useState('');
+
+  const  handleVelgKurs = (kursTittel) => {
+    setValgtKurs(kursTittel);
+    setCurrentPage('paamelding');
+  };
 
   return (
       <div className="container">
@@ -134,8 +141,12 @@ function App() {
         {currentPage === 'profil' && (
             <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
         )}
+
         {currentPage === 'kurskalender' && (
-            <Kurskalender setCurrentPage={setCurrentPage}/>
+            <Kurskalender handleVelgKurs={handleVelgKurs} />
+        )}
+        {currentPage === 'pamelding' && (
+            <Paamelding valgtKurs={valgtKurs} setCurrentPage={setCurrentPage} user={user} />
         )}
 
         <footer>
