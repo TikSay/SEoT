@@ -82,7 +82,7 @@ function App() {
                     et dolore magna aliqua</p>
                   <div className="card-footer">
                     <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary">Til Påmelding</button>
+                    <button className="btn-secondary" onClick={()=> handleVelgKurs('Sytreff i Råde')}>Til Påmelding</button>
                   </div>
               </div>
             </div>
@@ -95,7 +95,7 @@ function App() {
                     et dolore magna aliqua</p>
                   <div className="card-footer">
                     <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary">Til Påmelding</button>
+                    <button className="btn-secondary" onClick={() => handleVelgKurs('Meksikansk fletting')}>Til Påmelding</button>
                   </div>
                 </div>
               </div>
@@ -108,7 +108,7 @@ function App() {
                     et dolore magna aliqua</p>
                   <div className="card-footer">
                     <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary">Til Påmelding</button>
+                    <button className="btn-secondary" onClick={() => handleVelgKurs('Lær å brodere, plattsøm og tellesøm')}>Til Påmelding</button>
                   </div>
                 </div>
               </div>
@@ -121,7 +121,7 @@ function App() {
                     et dolore magna aliqua</p>
                   <div className="card-footer">
                     <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary">Til Påmelding</button>
+                    <button className="btn-secondary" onClick={() => handleVelgKurs('Bunadkurs')}>Til Påmelding</button>
                   </div>
                 </div>
               </div>
@@ -145,7 +145,7 @@ function App() {
         {currentPage === 'kurskalender' && (
             <Kurskalender handleVelgKurs={handleVelgKurs} />
         )}
-        {currentPage === 'pamelding' && (
+        {currentPage === 'paamelding' && (
             <Paamelding valgtKurs={valgtKurs} setCurrentPage={setCurrentPage} user={user} />
         )}
 
