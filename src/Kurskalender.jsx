@@ -11,7 +11,7 @@ function Kurskalender({handleVelgKurs}){
     ];
 
     return(
-      <main>
+      <main className="kurs-grid">
           <h2>Kommende Kurs- og Aktiviteter</h2>
           <div className="cards-grid">
               {kursListe.map((kurs)=> (
