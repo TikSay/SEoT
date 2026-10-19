@@ -1,6 +1,6 @@
 -- For eldre users-tabeller fra før registreringssiden fikk fornavn, etternavn og by.
 -- username blir valgfri (UNIQUE godtar flere NULL), og tre nye kolonner legges til.
--- Ta backup først: mysqldump -u root -p --databases sprint1 > backup.sql
+-- Ta backup først: mysqldump -u root -p --set-gtid-purged=OFF --databases sprint1 > database/backup.sql (fra rotmappen SEoT/)
 
 USE sprint1;
 
