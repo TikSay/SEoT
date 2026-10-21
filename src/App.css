@@ -226,7 +226,7 @@ footer::before {
   font-size: 30px;
 }
 
-/*Login*/
+/**Login**/
 .login-main {
   display: flex;
   justify-content: center;
@@ -334,7 +334,7 @@ footer::before {
   text-decoration: underline;
 }
 
-/*PÅMELDINGSSIDE**/
+/**PÅMELDINGSSIDE**/
 .paamelding-box {
   background-color: var(--primary-red);
   color: #fff;
@@ -387,4 +387,99 @@ footer::before {
 /**KURS**/
 .kurs-grid{
   grid-template-columns: 1fr;
+}
+
+/*Profil siden*/
+.profil-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    margin-top: 30px;
+}
+
+.profil-box {
+    background-color: var(--card-bg);
+    padding: 50px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.profil-box h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profil-info p {
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+.profil-box .input-group input,
+.profil-box .by-options {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.profil-box .by-options {
+    background-color: white;
+    border: 1px solid #ccc;
+}
+
+.profil-box .login-btn {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.profil-box .register-link {
+    margin-top: 25px;
+}
+
+
+/*redigering side*/
+.profil-box .input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.profil-box .input-group label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.profil-box .input-group input,
+.profil-box .input-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: var(--font-main);
+    box-sizing: border-box;
+}
+
+.profil-box .by-options {
+    background-color: white;
+}
+
+.profil-box .main-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 15px 30px;
+    background-color: var(--primary-red);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.profil-box .main-btn[style] {
+    background-color: #333 !important;
 }
