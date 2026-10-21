@@ -20,15 +20,22 @@ Ny database fra bunnen av:
 mysql -u root -p < database/schema.sql
 ```
 
-Har du allerede en eldre `users`-tabell? Kjør bare migreringene du mangler, i rekkefølge:
+Har du allerede databasen fra før? Kjør bare migreringene du mangler, i rekkefølge:
 
 ```bash
 mysql -u root -p < database/migrations/001_fornavn_etternavn_lokallag.sql
 mysql -u root -p < database/migrations/002_reset_kode.sql
+mysql -u root -p < database/migrations/003_kurs_og_pamelding.sql   # Sprint 2: courses og enrollments
 ```
 
-Ta gjerne backup først: `mysqldump -u root -p --databases sprint1 > backup.sql`
-(backup-filer ignoreres av git).
+Ta gjerne backup først (fra rotmappen `SEoT/`):
+
+```bash
+mysqldump -u root -p --set-gtid-purged=OFF --databases sprint1 > database/backup.sql
+```
+
+Backupen havner i `database/`, der `backup*.sql` ignoreres av git. Den inneholder ekte data
+(også passord-hasher), så ikke legg den andre steder i prosjektet.
 
 ## 2. Lag din egen db.properties
 
