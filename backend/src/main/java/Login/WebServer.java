@@ -20,11 +20,13 @@ public class WebServer {
 
     static void main() {
         LoginHandler handler;
+        SessionUser sessionUser;
         RegisterHandler registerHandler;
         ForgotPasswordHandler forgotPasswordHandler;
         try {
             DataRegistry registry = DbConfig.load().createRegistry();
             handler = new LoginHandler(registry);
+            sessionUser = new SessionUser(registry);
             registerHandler = new RegisterHandler(registry);
             // Sprint 1: reset-koden skrives i konsollen. Her bytter vi til ekte e-post senere.
             forgotPasswordHandler = new ForgotPasswordHandler(registry, new ConsoleResetCodeSender(), Clock.systemUTC());
@@ -32,7 +34,7 @@ public class WebServer {
             IO.println("Configuration error: " + e.getMessage());
             return;
         }
-        LoginController controller = new LoginController(handler);
+        LoginController controller = new LoginController(handler, sessionUser);
         RegisterController registerController = new RegisterController(registerHandler);
         ForgotPasswordController forgotPasswordController = new ForgotPasswordController(forgotPasswordHandler);
         String frontendOrigin = System.getenv("FRONTEND_ORIGIN");
@@ -61,6 +63,8 @@ public class WebServer {
             config.bundledPlugins.enableCors(cors -> cors.addRule(rule -> rule.allowHost(frontendOrigin)));
         }
         config.routes.post("/api/login", controller::login);
+        config.routes.get("/api/me", controller::me);
+        config.routes.post("/api/logout", controller::apiLogout);
         config.routes.post("/api/register", registerController::register);
         config.routes.post("/api/forgot-password", forgotPasswordController::forgotPassword);
         config.routes.post("/api/reset-password", forgotPasswordController::resetPassword);
