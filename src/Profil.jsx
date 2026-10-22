@@ -7,10 +7,27 @@ function Profil({ setCurrentPage, setIsLoggedIn, user, setUser }) {
     const [email, setEmail] = useState(user ? user.email : '');
     const [lokallag, setLokallag] = useState(user ? user.lokallag : '');
 
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        setUser(null);
-        setCurrentPage('home');
+    const [loggerUt, setLoggerUt] = useState(false);
+    const [logoutFeil, setLogoutFeil] = useState('');
+
+    // Logger ut på serveren først, så React bare viser "utlogget" når sesjonen faktisk er avsluttet
+    const handleLogout = async () => {
+        setLoggerUt(true);
+        setLogoutFeil('');
+        try {
+            const response = await fetch('/api/logout', { method: 'POST' });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.message);
+            }
+            setIsLoggedIn(false);
+            setUser(null);
+            setCurrentPage('home');
+        } catch {
+            setLogoutFeil('Utloggingen mislyktes. Du er fortsatt logget inn. Prøv igjen om litt.');
+        } finally {
+            setLoggerUt(false);
+        }
     };
 
     const handleSave = (e) => {
@@ -112,9 +129,13 @@ function Profil({ setCurrentPage, setIsLoggedIn, user, setUser }) {
                     className="main-btn login-btn"
                     style={{ backgroundColor: '#333', marginTop: '15px' }}
                     onClick={handleLogout}
+                    disabled={loggerUt}
                 >
-                    LOGG UT
+                    {loggerUt ? 'LOGGER UT...' : 'LOGG UT'}
                 </button>
+                {logoutFeil && (
+                    <p role="alert" style={{ color: '#b00020' }}>{logoutFeil}</p>
+                )}
 
                 <div className="register-link">
                     <a href="#" onClick={(e) => {
