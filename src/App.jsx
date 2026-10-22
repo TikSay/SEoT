@@ -1,23 +1,31 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Login from './Login';
 import Registrer from './Registrer';
 import Profil from './Profil';
 import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
-import Kurskalender from "./Kurskalender.jsx";
-import Paamelding from "./Påmeldning.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [valgtKurs, setValgtKurs] = useState('');
+  const [courses, setCourses] = useState([]);
 
-  const  handleVelgKurs = (kursTittel) => {
-    setValgtKurs(kursTittel);
-    setCurrentPage('paamelding');
-  };
+  useEffect(() => {
+    fetch('/api/courses')
+        .then(res => res.text())
+        .then(text => {
+          if (!text) {
+            console.error('Tomt svar: backend kjører ikke. Start WebServer i IntelliJ.');
+            return;
+          }
+          const data = JSON.parse(text);
+          console.log('Svar fra /api/courses:', data);
+          if (data.success) setCourses(data.courses);
+        })
+        .catch(err => console.error('Klarte ikke hente kurs:', err));
+  }, []);
 
   return (
       <div className="container">
@@ -43,7 +51,7 @@ function App() {
             <div className="icon-item">
               <span><i className="fa-solid fa-magnifying-glass"></i></span>SØK
             </div>
-            <div className="icon-item" onClick={() => setCurrentPage('kurskalender')}>
+            <div className="icon-item">
               <span><i className="fa-solid fa-calendar"></i></span>KALENDER
             </div>
             <div className="icon-item">
@@ -74,57 +82,21 @@ function App() {
             <h2>Kommende Kurs- og Aktiviteter</h2>
 
             <div className="cards-grid">
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
-                <div className="card-content">
-                  <h3>Sytreff i Råde</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={()=> handleVelgKurs('Sytreff i Råde')}>Til Påmelding</button>
-                  </div>
-              </div>
-            </div>
+              {courses.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
 
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
-                <div className="card-content">
-                  <h3>Meksikansk fletting</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Meksikansk fletting')}>Til Påmelding</button>
+              {courses.map(kurs => (
+                  <div className="card" key={kurs.id}>
+                    <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                    <div className="card-content">
+                      <h3>{kurs.tittel}</h3>
+                      <p>{kurs.beskrivelse}</p>
+                      <div className="card-footer">
+                        <div className="info-icon"><i className="fa-solid fa-info"></i></div>
+                        <button className="btn-secondary">Til Påmelding</button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
-                <div className="card-content">
-                  <h3>Lær å brodere, plattsøm og tellesøm</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Lær å brodere, plattsøm og tellesøm')}>Til Påmelding</button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
-                <div className="card-content">
-                  <h3>Bunadkurs</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Bunadkurs')}>Til Påmelding</button>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </section>
         </main>
@@ -140,13 +112,6 @@ function App() {
         )}
         {currentPage === 'profil' && (
             <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
-        )}
-
-        {currentPage === 'kurskalender' && (
-            <Kurskalender handleVelgKurs={handleVelgKurs} />
-        )}
-        {currentPage === 'paamelding' && (
-            <Paamelding valgtKurs={valgtKurs} setCurrentPage={setCurrentPage} user={user} />
         )}
 
         <footer>
