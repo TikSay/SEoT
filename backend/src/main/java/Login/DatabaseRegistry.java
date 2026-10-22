@@ -53,6 +53,38 @@ public class DatabaseRegistry implements DataRegistry {
     }
 
     @Override
+    public User findUserById(int id) {
+        String sql = "SELECT id, username, email, fornavn, etternavn, lokallag FROM users WHERE id = ?";
+
+        try (Connection con = DriverManager.getConnection(url, dbUser, dbPassword);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("fornavn"),
+                        rs.getString("etternavn"),
+                        rs.getString("lokallag")
+                );
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Database error during user lookup: " + e.getMessage(),
+                    e
+            );
+        }
+
+        return null;
+    }
+
+    @Override
     public void addUser(String fornavn, String etternavn, String email, String passwordHash, String lokallag) {
         String sql =
                 "INSERT INTO users (fornavn, etternavn, email, password_hash, lokallag) VALUES (?, ?, ?, ?, ?)";

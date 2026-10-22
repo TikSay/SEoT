@@ -67,6 +67,27 @@ public class FakeDataRegistry implements DataRegistry {
         );
     }
 
+    /** Fjerner brukeren, som om den ble slettet fra databasen. */
+    public void removeUser(String email) {
+        usersByEmail.remove(email);
+    }
+
+    /** Bytter ut brukeropplysningene, men beholder passordet. Brukes for å teste at /api/me viser nye data. */
+    public void replaceUser(User user) {
+        UserCredentials old = usersByEmail.get(user.getEmail());
+        usersByEmail.put(user.getEmail(), new UserCredentials(user, old.getPasswordHash()));
+    }
+
+    @Override
+    public User findUserById(int id) {
+        for (UserCredentials credentials : usersByEmail.values()) {
+            if (credentials.getUser().getId() == id) {
+                return credentials.getUser();
+            }
+        }
+        return null;
+    }
+
     @Override
     public UserCredentials findUserByEmail(String email) {
         callCount++;

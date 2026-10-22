@@ -6,6 +6,9 @@ public interface DataRegistry {
 
     UserCredentials findUserByEmail(String email);
 
+    /** Henter brukeren med denne ID-en, eller null hvis den ikke finnes (f.eks. er slettet). */
+    User findUserById(int id);
+
     void addUser(String fornavn, String etternavn, String email, String passwordHash, String lokallag);
 
     /** Lagrer en ny reset-kode (allerede hashet) og nullstiller antall forsøk. */
