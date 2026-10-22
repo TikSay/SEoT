@@ -334,57 +334,23 @@ footer::before {
   text-decoration: underline;
 }
 
-/*PÅMELDINGSSIDE**/
-.paamelding-box {
-  background-color: var(--primary-red);
-  color: #fff;
+.card-meta {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  font-size: 0.9rem;
 }
 
-.paamelding-box h2{
-  color: #fff;
-  text-align: left;
-  margin-bottom: 20px;
-}
-
-.paamelding-box label{
-  color: #fff;
-}
-
-.paamelding-options{
-  margin: 15px 0;
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.paamelding-options-item{
+.card-meta li {
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
 }
 
-.paamelding-terms{
-  margin: 20px 0;
-  font-size: 13px;
-}
-
-.paamelding-submit-container{
-  display: flex;
-  justify-content: flex-end;
-}
-
-.btn-paamelding {
-  background-color: transparent;
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 8px 20px;
-  border-radius: 5px;
-  font-weight: bold;
-}
-
-/**KURS**/
-.kurs-grid{
-  grid-template-columns: 1fr;
+.card-meta i {
+  width: 14px;
+  color: #c0284f;
 }

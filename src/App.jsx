@@ -6,125 +6,140 @@ import Profil from './Profil';
 import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
 
+function formaterDato(dato) {
+    return new Date(dato + 'T00:00').toLocaleDateString('nb-NO', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+}
+
+function formaterPris(pris) {
+    return Number(pris) === 0 ? 'Gratis' : `${Number(pris).toLocaleString('nb-NO')} kr`;
+}
+
+function storForbokstav(tekst) {
+    return tekst.charAt(0).toUpperCase() + tekst.slice(1);
+}
+
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [courses, setCourses] = useState([]);
+    const [currentPage, setCurrentPage] = useState('home');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
+    const [courses, setCourses] = useState([]);
 
-  useEffect(() => {
-    fetch('/api/courses')
-        .then(res => res.text())
-        .then(text => {
-          if (!text) {
-            console.error('Tomt svar: backend kjører ikke. Start WebServer i IntelliJ.');
-            return;
-          }
-          const data = JSON.parse(text);
-          console.log('Svar fra /api/courses:', data);
-          if (data.success) setCourses(data.courses);
-        })
-        .catch(err => console.error('Klarte ikke hente kurs:', err));
-  }, []);
+    useEffect(() => {
+        fetch('/api/courses')
+            .then(res => res.json())
+            .then(data => { if (data.success) setCourses(data.courses); })
+            .catch(() => setCourses([]));
+    }, []);
 
-  return (
-      <div className="container">
-        <header>
-          <div className="logo-section" onClick={()=> setCurrentPage('home')}>
-            <div className="logo-icon">
-              <img
-                  src={husflidLogo}
-                  alt="Østfolds Husflidslag Logo"
-                  style={{ width: '60px', height: 'auto' }}
-              />
-            </div>
-            <div className="logo-text">Østfolds Husflidslag</div>
-          </div>
-
-          <nav className="main-nav">
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); }}>AKTUELT</a>
-            <a href="#">FAGSIDER</a>
-            <a href="#">KONTAKT OSS</a>
-          </nav>
-
-          <nav className="icon-nav">
-            <div className="icon-item">
-              <span><i className="fa-solid fa-magnifying-glass"></i></span>SØK
-            </div>
-            <div className="icon-item">
-              <span><i className="fa-solid fa-calendar"></i></span>KALENDER
-            </div>
-            <div className="icon-item">
-              <span><i className="fa-solid fa-cart-shopping"></i></span>NETTBUTIKK
-            </div>
-            <div className="icon-item" onClick={() => setCurrentPage(isLoggedIn ? 'profil' : 'login')}>
-              <span><i className="fa-solid fa-user"></i></span>
-              {isLoggedIn ? 'MIN SIDE' : 'LOGG INN'}
-            </div>
-          </nav>
-        </header>
-
-        {currentPage === 'home' && (
-            <main>
-              <section className="left-column">
-                <h2>Siste Nytt</h2>
-                <div className="news-pic-temp"></div>
-                <div className="news-text">
-              <p>Østfold Husflidslag ble stiftet 28.09.1932. Vår første bunad, Østfold kvinnebunad, ble lansert i 1936.
-                Deretter kom Østfold mannsbunad i 1990. Og Herregårdsbunad for kvinner ble lansert i 2015.</p>
-              <p>For alle som liker å skape med hendene, fordype seg i tradisjonshåndverk eller lære noe nytt i
-                fellesskap med andre så kan du bli medlem i et av våre lokallag!</p>
-            </div>
-            <button className="main-btn" onClick={() => setCurrentPage('registrer')}>BLI MEDLEM</button>
-          </section>
-
-          <section className="right-column">
-            <h2>Kommende Kurs- og Aktiviteter</h2>
-
-            <div className="cards-grid">
-              {courses.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
-
-              {courses.map(kurs => (
-                  <div className="card" key={kurs.id}>
-                    <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
-                    <div className="card-content">
-                      <h3>{kurs.tittel}</h3>
-                      <p>{kurs.beskrivelse}</p>
-                      <div className="card-footer">
-                        <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                        <button className="btn-secondary">Til Påmelding</button>
-                      </div>
+    return (
+        <div className="container">
+            <header>
+                <div className="logo-section" onClick={()=> setCurrentPage('home')}>
+                    <div className="logo-icon">
+                        <img
+                            src={husflidLogo}
+                            alt="Østfolds Husflidslag Logo"
+                            style={{ width: '60px', height: 'auto' }}
+                        />
                     </div>
-                  </div>
-              ))}
-            </div>
-          </section>
-        </main>
-      )}
-        {currentPage === 'login' && (
-            <Login setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
-        )}
-        {currentPage === 'registrer' && (
-            <Registrer setCurrentPage={setCurrentPage} />
-        )}
-        {currentPage === 'glemt-passord' && (
-            <GlemtPassord setCurrentPage={setCurrentPage} />
-        )}
-        {currentPage === 'profil' && (
-            <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
-        )}
+                    <div className="logo-text">Østfolds Husflidslag</div>
+                </div>
 
-        <footer>
-          <div className="footer-logo">
-            <img
-                src={husflidLogo}
-                alt="Østfolds Husflidslag Logo"
-                style={{ width: '60px', height: 'auto' }}
-            />
-          </div>
-        </footer>
-      </div>
-  );
+                <nav className="main-nav">
+                    <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); }}>AKTUELT</a>
+                    <a href="#">FAGSIDER</a>
+                    <a href="#">KONTAKT OSS</a>
+                </nav>
+
+                <nav className="icon-nav">
+                    <div className="icon-item">
+                        <span><i className="fa-solid fa-magnifying-glass"></i></span>SØK
+                    </div>
+                    <div className="icon-item">
+                        <span><i className="fa-solid fa-calendar"></i></span>KALENDER
+                    </div>
+                    <div className="icon-item">
+                        <span><i className="fa-solid fa-cart-shopping"></i></span>NETTBUTIKK
+                    </div>
+                    <div className="icon-item" onClick={() => setCurrentPage(isLoggedIn ? 'profil' : 'login')}>
+                        <span><i className="fa-solid fa-user"></i></span>
+                        {isLoggedIn ? 'MIN SIDE' : 'LOGG INN'}
+                    </div>
+                </nav>
+            </header>
+
+            {currentPage === 'home' && (
+                <main>
+                    <section className="left-column">
+                        <h2>Siste Nytt</h2>
+                        <div className="news-pic-temp"></div>
+                        <div className="news-text">
+                            <p>Østfold Husflidslag ble stiftet 28.09.1932. Vår første bunad, Østfold kvinnebunad, ble lansert i 1936.
+                                Deretter kom Østfold mannsbunad i 1990. Og Herregårdsbunad for kvinner ble lansert i 2015.</p>
+                            <p>For alle som liker å skape med hendene, fordype seg i tradisjonshåndverk eller lære noe nytt i
+                                fellesskap med andre så kan du bli medlem i et av våre lokallag!</p>
+                        </div>
+                        <button className="main-btn" onClick={() => setCurrentPage('registrer')}>BLI MEDLEM</button>
+                    </section>
+
+                    <section className="right-column">
+                        <h2>Kommende Kurs- og Aktiviteter</h2>
+
+                        <div className="cards-grid">
+                            {courses.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
+
+                            {courses.map(kurs => (
+                                <div className="card" key={kurs.id}>
+                                    <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                                    <div className="card-content">
+                                        <h3>{kurs.tittel}</h3>
+                                        <p>{kurs.beskrivelse}</p>
+                                        <ul className="card-meta">
+                                            <li><i className="fa-solid fa-calendar"></i> {formaterDato(kurs.dato)}</li>
+                                            <li><i className="fa-solid fa-clock"></i> Kl. {kurs.starttid}</li>
+                                            <li><i className="fa-solid fa-users"></i> Maks {kurs.kapasitet} deltakere</li>
+                                            <li><i className="fa-solid fa-tag"></i> {formaterPris(kurs.pris)}</li>
+                                            {kurs.nivaa && (
+                                                <li><i className="fa-solid fa-signal"></i> {storForbokstav(kurs.nivaa)}</li>
+                                            )}
+                                        </ul>
+                                        <div className="card-footer">
+                                            <div className="info-icon"><i className="fa-solid fa-info"></i></div>
+                                            <button className="btn-secondary">Til Påmelding</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </main>
+            )}
+            {currentPage === 'login' && (
+                <Login setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
+            )}
+            {currentPage === 'registrer' && (
+                <Registrer setCurrentPage={setCurrentPage} />
+            )}
+            {currentPage === 'glemt-passord' && (
+                <GlemtPassord setCurrentPage={setCurrentPage} />
+            )}
+            {currentPage === 'profil' && (
+                <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
+            )}
+
+            <footer>
+                <div className="footer-logo">
+                    <img
+                        src={husflidLogo}
+                        alt="Østfolds Husflidslag Logo"
+                        style={{ width: '60px', height: 'auto' }}
+                    />
+                </div>
+            </footer>
+        </div>
+    );
 }
 
 export default App;
