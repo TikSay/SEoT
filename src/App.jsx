@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Login from './Login';
 import Registrer from './Registrer';
 import Profil from './Profil';
@@ -12,12 +12,27 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [sjekkerSesjon, setSjekkerSesjon] = useState(true);
   const [valgtKurs, setValgtKurs] = useState('');
 
   const  handleVelgKurs = (kursTittel) => {
     setValgtKurs(kursTittel);
     setCurrentPage('paamelding');
   };
+
+  // Spør backend om brukeren fortsatt er innlogget, så innloggingen huskes etter refresh
+  useEffect(() => {
+    fetch('/api/me')
+        .then(res => res.ok ? res.json() : null)
+        .then(result => {
+          if (result?.success) {
+            setUser(result.user);
+            setIsLoggedIn(true);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setSjekkerSesjon(false));
+  }, []);
 
   return (
       <div className="container">
@@ -49,9 +64,9 @@ function App() {
             <div className="icon-item">
               <span><i className="fa-solid fa-cart-shopping"></i></span>NETTBUTIKK
             </div>
-            <div className="icon-item" onClick={() => setCurrentPage(isLoggedIn ? 'profil' : 'login')}>
+            <div className="icon-item" onClick={() => !sjekkerSesjon && setCurrentPage(isLoggedIn ? 'profil' : 'login')}>
               <span><i className="fa-solid fa-user"></i></span>
-              {isLoggedIn ? 'MIN SIDE' : 'LOGG INN'}
+              {sjekkerSesjon ? '...' : isLoggedIn ? 'MIN SIDE' : 'LOGG INN'}
             </div>
           </nav>
         </header>
