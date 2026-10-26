@@ -386,10 +386,29 @@ footer::before {
 
 /**KURS**/
 .kurs-grid{
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /**Search BAR**/
 .searchBar{
-  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.result-count {
+  margin: 0;
+  font-weight: bold;
+}
+
+.cards-grid2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
 }
