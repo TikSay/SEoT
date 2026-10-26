@@ -388,3 +388,8 @@ footer::before {
 .kurs-grid{
   grid-template-columns: 1fr;
 }
+
+/**Search BAR**/
+.searchBar{
+  justify-content: center;
+}

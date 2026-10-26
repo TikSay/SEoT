@@ -1,4 +1,5 @@
 import KursCard from './KursCard.jsx'
+import SearchBar from './search.jsx';
 
 function Kurskalender({handleVelgKurs}){
     const kursListe = [
@@ -10,15 +11,36 @@ function Kurskalender({handleVelgKurs}){
 
     ];
 
+    const filtrerteKurs = kursListe.filter((kurs) =>
+    kurs.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    kurs.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    //tester søkemoto funksjon//
+
+
+
     return(
       <main className="kurs-grid">
           <h2>Kommende Kurs- og Aktiviteter</h2>
-          <div className="cards-grid">
-              {kursListe.map((kurs)=> (
-                  <KursCard key={kurs.id} title={kurs.title} image={kurs.image} description={kurs.description} onPaamelding={handleVelgKurs}/>
-
-                  ))}
+          <div className="searchBar">
+              <SearchBar placeholder="Søk etter kurs..." searchQuery={searchQuery} onSearchChange={setSearchQuery} />
           </div>
+          <p className="result-count"> {filtrerteKurs.length} resultater</p>
+
+          <div className="cards-grid">
+              {filtrerteKurs.length > 0? (
+                  filtrerteKurs.map((kurs)=> (
+                      <KursCard key={kurs.id} title={kurs.title} image={kurs.image} description={kurs.description} onPaamelding={()=> handleVelgKurs(kurs)}/>
+
+                  ))
+              ) : (
+                  <div className="no-results">
+                      <h3>Ingen kurs funnet</h3>
+                      <p>Prøv å søke etter noe annet.</p>
+                  </div>
+              )}
+
+          </div>
+
       </main>
     );
 }

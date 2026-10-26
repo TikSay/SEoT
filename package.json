@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "devextreme": "24.2.17",
+    "devextreme-react": "24.2.17",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-icons": "^5.7.0"
@@ -19,6 +21,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
+    "devextreme-themebuilder": "26.1.5",
     "eslint": "^10.10.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",

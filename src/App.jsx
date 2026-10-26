@@ -1,3 +1,5 @@
+import 'devextreme/dist/css/dx.fluent.blue.light.css';
+import 'devextreme/dist/css/dx.fluent.blue.light.css';
 import './App.css';
 import { useState } from 'react';
 import Login from './Login';
