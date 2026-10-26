@@ -1,5 +1,7 @@
 package Login;
 
+import Login.Course.DatabaseRegistry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;

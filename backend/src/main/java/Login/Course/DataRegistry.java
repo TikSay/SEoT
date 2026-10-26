@@ -1,4 +1,7 @@
-package Login;
+package Login.Course;
+
+import Login.ConsoleResetCodeSender.UserCredentials;
+import Login.Password.ResetPassword.PasswordReset;
 
 import java.time.Instant;
 

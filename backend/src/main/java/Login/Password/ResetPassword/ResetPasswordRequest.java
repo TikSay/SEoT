@@ -1,4 +1,4 @@
-package Login;
+package Login.Password.ResetPassword;
 
 /** Det frontend sender til POST /api/reset-password: {"email": "...", "code": "...", "newPassword": "..."} */
 public class ResetPasswordRequest {

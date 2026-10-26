@@ -1,4 +1,4 @@
-package Login;
+package Login.Course;
 
 import java.sql.*;
 import java.util.ArrayList;

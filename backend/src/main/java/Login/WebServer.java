@@ -1,5 +1,14 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.ConsoleResetCodeSender;
+import Login.Course.DataRegistry;
+import Login.Password.ForgotPassword.ForgotPasswordController;
+import Login.Password.ForgotPassword.ForgotPasswordHandler;
+import Login.Password.Login.LoginController;
+import Login.Password.Login.LoginHandler;
+import Login.Password.Register.RegisterController;
+import Login.Password.Register.RegisterHandler;
+
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.staticfiles.Location;

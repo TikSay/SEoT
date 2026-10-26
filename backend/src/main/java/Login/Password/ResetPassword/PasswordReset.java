@@ -1,4 +1,4 @@
-package Login;
+package Login.Password.ResetPassword;
 
 import java.time.Instant;
 

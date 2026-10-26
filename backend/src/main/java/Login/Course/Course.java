@@ -1,4 +1,4 @@
-package Login;
+package Login.Course;
 
 import java.math.BigDecimal;
 

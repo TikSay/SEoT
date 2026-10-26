@@ -1,4 +1,6 @@
-package Login;
+package Login.Password.Login;
+
+import Login.ConsoleResetCodeSender.User;
 
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;

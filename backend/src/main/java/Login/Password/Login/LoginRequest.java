@@ -1,4 +1,4 @@
-package Login;
+package Login.Password.Login;
 
 /** Det frontend sender til POST /api/login: {"email": "...", "password": "..."} */
 public class LoginRequest {

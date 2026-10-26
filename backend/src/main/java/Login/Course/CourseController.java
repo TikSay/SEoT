@@ -1,4 +1,4 @@
-package Login;
+package Login.Course;
 
 import io.javalin.http.Context;
 

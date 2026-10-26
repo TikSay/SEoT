@@ -1,4 +1,4 @@
-package Login;
+package Login.ConsoleResetCodeSender;
 
 /**
  * Bare for Sprint 1: skriver reset-koden i konsollen, så vi kan teste lokalt.

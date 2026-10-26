@@ -1,0 +1,103 @@
+.pamelding {
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.pamelding-boks {
+  width: 100%;
+  max-width: 560px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pamelding-boks h2 {
+  margin: 0;
+}
+
+.pamelding-boks label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.pamelding-boks input,
+.pamelding-boks select {
+  font: inherit;
+  font-weight: 400;
+  padding: 10px 12px;
+  border: 1px solid #b5b5b5;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.pamelding-rad {
+  display: flex;
+  gap: 16px;
+}
+
+.pamelding-boks .pamelding-medlem {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.pamelding-medlem input {
+  width: 18px;
+  height: 18px;
+}
+
+.pamelding-hint {
+  margin: -8px 0 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.pamelding-pris {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.pamelding-total {
+  margin-top: 4px;
+  font-size: 1.1rem;
+}
+
+.pamelding-feil {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #fbe3e8;
+  color: #8a1430;
+}
+
+.pamelding-knapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.pamelding-avbryt {
+  font: inherit;
+  padding: 10px 18px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .pamelding-rad {
+    flex-direction: column;
+  }
+}

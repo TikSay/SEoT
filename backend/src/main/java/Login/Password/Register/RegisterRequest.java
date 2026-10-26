@@ -1,4 +1,4 @@
-package Login;
+package Login.Password.Register;
 
 /**
  * Det frontend sender til POST /api/register:

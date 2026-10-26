@@ -1,4 +1,6 @@
-package Login;
+package Login.Password.Register;
+
+import Login.Password.Login.LoginResult;
 
 import io.javalin.http.Context;
 

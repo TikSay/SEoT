@@ -1,5 +1,11 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.User;
+import Login.ConsoleResetCodeSender.UserCredentials;
+import Login.Course.DataRegistry;
+import Login.Password.Login.LoginHandler;
+import Login.Password.Login.LoginResult;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

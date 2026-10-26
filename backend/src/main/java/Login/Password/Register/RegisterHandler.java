@@ -1,4 +1,6 @@
-package Login;
+package Login.Password.Register;
+
+import Login.Course.DataRegistry;
 
 import org.mindrot.jbcrypt.BCrypt;
 

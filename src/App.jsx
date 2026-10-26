@@ -4,27 +4,20 @@ import Login from './Login';
 import Registrer from './Registrer';
 import Profil from './Profil';
 import GlemtPassord from './GlemtPassord';
+import Pamelding from './Påmeldning';
 import husflidLogo from './assets/husflidlog.jpg';
-
-function formaterDato(dato) {
-    return new Date(dato + 'T00:00').toLocaleDateString('nb-NO', {
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-    });
-}
-
-function formaterPris(pris) {
-    return Number(pris) === 0 ? 'Gratis' : `${Number(pris).toLocaleString('nb-NO')} kr`;
-}
-
-function storForbokstav(tekst) {
-    return tekst.charAt(0).toUpperCase() + tekst.slice(1);
-}
 
 function App() {
     const [currentPage, setCurrentPage] = useState('home');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
     const [courses, setCourses] = useState([]);
+    const [valgtKursId, setValgtKursId] = useState(null);
+
+    function apnePamelding(kursId) {
+        setValgtKursId(kursId);
+        setCurrentPage('pamelding');
+    }
 
     useEffect(() => {
         fetch('/api/courses')
@@ -97,17 +90,15 @@ function App() {
                                         <h3>{kurs.tittel}</h3>
                                         <p>{kurs.beskrivelse}</p>
                                         <ul className="card-meta">
-                                            <li><i className="fa-solid fa-calendar"></i> {formaterDato(kurs.dato)}</li>
-                                            <li><i className="fa-solid fa-clock"></i> Kl. {kurs.starttid}</li>
-                                            <li><i className="fa-solid fa-users"></i> Maks {kurs.kapasitet} deltakere</li>
-                                            <li><i className="fa-solid fa-tag"></i> {formaterPris(kurs.pris)}</li>
-                                            {kurs.nivaa && (
-                                                <li><i className="fa-solid fa-signal"></i> {storForbokstav(kurs.nivaa)}</li>
-                                            )}
+                                            <li>Dato: {new Date(kurs.dato).toLocaleDateString('nb-NO')}</li>
+                                            <li>Tid: {kurs.starttid.slice(0, 5)}</li>
+                                            <li>Maks {kurs.kapasitet} deltakere</li>
+                                            <li>Pris: {kurs.pris} kr</li>
+                                            <li>Nivå: {kurs.nivaa}</li>
                                         </ul>
                                         <div className="card-footer">
                                             <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                                            <button className="btn-secondary">Til Påmelding</button>
+                                            <button className="btn-secondary" onClick={() => apnePamelding(kurs.id)}>Til Påmelding</button>
                                         </div>
                                     </div>
                                 </div>
@@ -124,6 +115,9 @@ function App() {
             )}
             {currentPage === 'glemt-passord' && (
                 <GlemtPassord setCurrentPage={setCurrentPage} />
+            )}
+            {currentPage === 'pamelding' && (
+                <Pamelding courses={courses} valgtKursId={valgtKursId} setCurrentPage={setCurrentPage} />
             )}
             {currentPage === 'profil' && (
                 <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
