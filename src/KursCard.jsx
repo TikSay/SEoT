@@ -1,26 +1,25 @@
 
 
 
-function KursCard({title, image, description, onPaamelding}) {
-
+function KursCard({title, image, tags, onPaamelding}) {
     return (
-        <div className="cards-grid">
-            <div className="card">
-                <div className="card-img" style={{backgroundImage: `url('${image}')`}}></div>
-                <div className="card-content">
-                    <h3>{title}</h3>
-                    <p>{description}</p>
-                    <div className="card-footer">
-                        <button>
-                            <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                        </button>
-                        <button className="btn-secondary" onClick={()=> onPaamelding(title)}>Til Påmelding</button>
-                    </div>
+        <div className="course-card" onClick={onPaamelding}>
+
+            <div className="course-img-container" style={{backgroundImage: `url('${image}')`}}>
+                <div className="course-tags">
+                    {/* Henter tags fra kursobjektet og viser dem */}
+                    {tags && tags.map((tag, index) => (
+                        <span key={index} className="course-tag">{tag}</span>
+                    ))}
                 </div>
             </div>
-        </div>
 
+            <div className="course-content">
+                <h3>{title}</h3>
+            </div>
+
+        </div>
     )
 }
 
-export default KursCard
+export default KursCard;
