@@ -246,6 +246,111 @@ class ForgotPasswordHandlerTest {
         assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
     }
 
+    // --- S-006: e-postformat, kodeformat og passordkrav ---
+
+    @ParameterizedTest
+    @ValueSource(strings = {"alice", "alice@", "alice@example", "alice example@example.com"})
+    void invalidEmailFormatIsRejectedWhenRequestingCode(String email) {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.requestReset(email));
+        assertEquals("Please enter a valid email address.", e.getMessage());
+        assertEquals(0, sender.sendCount);
+    }
+
+    @Test
+    void tooLongEmailIsRejectedWhenRequestingCode() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.requestReset("b".repeat(89) + "@example.com"));
+        assertEquals("Email cannot be longer than 100 characters.", e.getMessage());
+        assertEquals(0, sender.sendCount);
+    }
+
+    @Test
+    void invalidEmailFormatIsRejectedWhenResetting() {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword("alice", sender.lastCode, NEW_PASSWORD));
+
+        assertEquals("Please enter a valid email address.", e.getMessage());
+        assertTrue(passwordIs(OLD_PASSWORD));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"12345", "1234567", "abcdef", "12a456", "123 456", "١٢٣٤٥٦"})
+    void codeThatIsNotSixDigitsIsRejectedWithoutCountingAttempt(String code) {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword(EMAIL, code, NEW_PASSWORD));
+
+        assertEquals(INVALID_CODE, e.getMessage());
+        assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
+        assertTrue(passwordIs(OLD_PASSWORD));
+    }
+
+    @Test
+    void codeWithSurroundingSpacesIsStillAccepted() {
+        handler.requestReset(EMAIL);
+
+        handler.resetPassword(EMAIL, "  " + sender.lastCode + " ", NEW_PASSWORD);
+
+        assertTrue(passwordIs(NEW_PASSWORD));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"a", "1234567"})
+    void newPasswordShorterThan8CharactersIsRejected(String newPassword) {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword(EMAIL, sender.lastCode, newPassword));
+
+        assertEquals("New password must be at least 8 characters.", e.getMessage());
+        assertTrue(passwordIs(OLD_PASSWORD));
+        assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
+    }
+
+    @Test
+    void weakNewPasswordDoesNotUseUpCode() {
+        handler.requestReset(EMAIL);
+        String code = sender.lastCode;
+        assertThrows(IllegalArgumentException.class, () -> handler.resetPassword(EMAIL, code, "kort"));
+
+        handler.resetPassword(EMAIL, code, NEW_PASSWORD);
+
+        assertTrue(passwordIs(NEW_PASSWORD));
+    }
+
+    @Test
+    void newPasswordOfExactly8CharactersIsAccepted() {
+        handler.requestReset(EMAIL);
+
+        handler.resetPassword(EMAIL, sender.lastCode, "12345678");
+
+        assertTrue(passwordIs("12345678"));
+    }
+
+    @Test
+    void newPasswordOfExactly72BytesIsAccepted() {
+        handler.requestReset(EMAIL);
+
+        handler.resetPassword(EMAIL, sender.lastCode, "a".repeat(72));
+
+        assertTrue(passwordIs("a".repeat(72)));
+    }
+
+    @Test
+    void newPasswordLongerThan72BytesIsRejected() {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword(EMAIL, sender.lastCode, "ø".repeat(37)));   // 74 bytes
+
+        assertEquals("New password cannot be longer than 72 bytes.", e.getMessage());
+        assertTrue(passwordIs(OLD_PASSWORD));
+    }
+
     @Test
     void newPasswordIsStoredAsBCryptHash() {
         handler.requestReset(EMAIL);

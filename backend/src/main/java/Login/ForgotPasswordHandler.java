@@ -29,6 +29,7 @@ public class ForgotPasswordHandler {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email cannot be empty.");
         }
+        InputValidator.requireValidEmail(email);
 
         String normalizedEmail = email.trim().toLowerCase();
         UserCredentials credentials = registry.findUserByEmail(normalizedEmail);
@@ -61,6 +62,13 @@ public class ForgotPasswordHandler {
         if (newPassword == null || newPassword.isBlank()) {
             throw new IllegalArgumentException("New password cannot be empty.");
         }
+
+        // S-006: sjekkes før databaseoppslaget, så ugyldig input verken teller som forsøk eller bruker opp koden
+        InputValidator.requireValidEmail(email);
+        if (!InputValidator.isValidResetCode(code)) {
+            throw new IllegalArgumentException(INVALID_CODE);
+        }
+        InputValidator.requireValidNewPassword(newPassword, "New password");
 
         PasswordReset reset = registry.findPasswordReset(email.trim().toLowerCase());
 
