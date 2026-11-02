@@ -1,5 +1,3 @@
-import 'devextreme/dist/css/dx.fluent.blue.light.css';
-import 'devextreme/dist/css/dx.fluent.blue.light.css';
 import './App.css';
 import { useState } from 'react';
 import Login from './Login';
@@ -9,6 +7,7 @@ import GlemtPassord from './GlemtPassord';
 import husflidLogo from './assets/husflidlog.jpg';
 import Kurskalender from "./Kurskalender.jsx";
 import Paamelding from "./Påmeldning.jsx";
+import KontaktOss from "./Kontakt.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -38,7 +37,7 @@ function App() {
           <nav className="main-nav">
             <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); }}>AKTUELT</a>
             <a href="#">FAGSIDER</a>
-            <a href="#">KONTAKT OSS</a>
+            <a href="#" onClick={(e)=> {e.preventDefault(); setCurrentPage('kontakt')}}>KONTAKT OSS</a>
           </nav>
 
           <nav className="icon-nav">
@@ -149,6 +148,10 @@ function App() {
         )}
         {currentPage === 'paamelding' && (
             <Paamelding valgtKurs={valgtKurs} setCurrentPage={setCurrentPage} user={user} />
+        )}
+
+        {currentPage === 'kontakt' && (
+            <KontaktOss setCurrentpage={setCurrentPage} />
         )}
 
         <footer>
