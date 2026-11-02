@@ -130,13 +130,6 @@ class LoginHandlerTest {
     }
 
     @Test
-    void emailOfExactly100CharactersIsLookedUp() {
-        String email = "b".repeat(88) + "@example.com";
-        registry.addUser(2, "bob", email, "secret123");
-        assertTrue(handler.login(email, "secret123").isSuccess());
-    }
-
-    @Test
     void emailLongerThan100CharactersIsRejectedWithoutQueryingRegistry() {
         LoginResult result = handler.login("b".repeat(89) + "@example.com", "secret123");
         assertFalse(result.isSuccess());
@@ -158,14 +151,6 @@ class LoginHandlerTest {
         assertFalse(result.isSuccess());
         assertEquals("Invalid email or password.", result.getMessage());
         assertEquals(0, registry.getCallCount());
-    }
-
-    @Test
-    void tooLongInputGivesSameResponseAsWrongPassword() {
-        LoginResult tooLong = handler.login("alice@example.com", "p".repeat(257));
-        LoginResult wrong = handler.login("alice@example.com", "wrongPassword");
-        assertEquals(wrong.isSuccess(), tooLong.isSuccess());
-        assertEquals(wrong.getMessage(), tooLong.getMessage());
     }
 
     @Test

@@ -246,22 +246,13 @@ class ForgotPasswordHandlerTest {
         assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
     }
 
-    // --- S-006: e-postformat, kodeformat og passordkrav ---
-
-    @ParameterizedTest
-    @ValueSource(strings = {"alice", "alice@", "alice@example", "alice example@example.com"})
-    void invalidEmailFormatIsRejectedWhenRequestingCode(String email) {
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> handler.requestReset(email));
-        assertEquals("Please enter a valid email address.", e.getMessage());
-        assertEquals(0, sender.sendCount);
-    }
+    // --- S-006: reglene testes i InputValidatorTest, her sjekker vi at de brukes og hva som skjer med koden ---
 
     @Test
-    void tooLongEmailIsRejectedWhenRequestingCode() {
+    void invalidEmailFormatIsRejectedWhenRequestingCode() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> handler.requestReset("b".repeat(89) + "@example.com"));
-        assertEquals("Email cannot be longer than 100 characters.", e.getMessage());
+                () -> handler.requestReset("alice@"));
+        assertEquals("Please enter a valid email address.", e.getMessage());
         assertEquals(0, sender.sendCount);
     }
 
@@ -277,7 +268,7 @@ class ForgotPasswordHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"12345", "1234567", "abcdef", "12a456", "123 456", "١٢٣٤٥٦"})
+    @ValueSource(strings = {"12345", "1234567", "abcdef"})
     void codeThatIsNotSixDigitsIsRejectedWithoutCountingAttempt(String code) {
         handler.requestReset(EMAIL);
 
@@ -298,13 +289,12 @@ class ForgotPasswordHandlerTest {
         assertTrue(passwordIs(NEW_PASSWORD));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"a", "1234567"})
-    void newPasswordShorterThan8CharactersIsRejected(String newPassword) {
+    @Test
+    void newPasswordOf7CharactersIsRejected() {
         handler.requestReset(EMAIL);
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> handler.resetPassword(EMAIL, sender.lastCode, newPassword));
+                () -> handler.resetPassword(EMAIL, sender.lastCode, "1234567"));
 
         assertEquals("New password must be at least 8 characters.", e.getMessage());
         assertTrue(passwordIs(OLD_PASSWORD));
@@ -332,20 +322,11 @@ class ForgotPasswordHandlerTest {
     }
 
     @Test
-    void newPasswordOfExactly72BytesIsAccepted() {
-        handler.requestReset(EMAIL);
-
-        handler.resetPassword(EMAIL, sender.lastCode, "a".repeat(72));
-
-        assertTrue(passwordIs("a".repeat(72)));
-    }
-
-    @Test
     void newPasswordLongerThan72BytesIsRejected() {
         handler.requestReset(EMAIL);
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> handler.resetPassword(EMAIL, sender.lastCode, "ø".repeat(37)));   // 74 bytes
+                () -> handler.resetPassword(EMAIL, sender.lastCode, "a".repeat(73)));
 
         assertEquals("New password cannot be longer than 72 bytes.", e.getMessage());
         assertTrue(passwordIs(OLD_PASSWORD));

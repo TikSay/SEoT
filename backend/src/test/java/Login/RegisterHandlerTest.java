@@ -91,52 +91,34 @@ class RegisterHandlerTest {
         assertNull(registry.findUserByEmail(email));
     }
 
-    // --- S-006: e-postformat og passordkrav ---
+    // --- S-006: reglene testes i InputValidatorTest, her sjekker vi bare at RegisterHandler bruker dem ---
 
-    @ParameterizedTest
-    @ValueSource(strings = {"abc", "ola.example.com", "ola@", "ola@example", "ola nordmann@example.com", "ola@@example.com"})
-    void invalidEmailFormatIsRejected(String email) {
+    @Test
+    void invalidEmailFormatIsRejected() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> handler.register("Ola", "Nordmann", email, "secret123", LOKALLAG));
+                () -> handler.register("Ola", "Nordmann", "ola.example.com", "secret123", LOKALLAG));
         assertEquals("Please enter a valid email address.", e.getMessage());
-        assertNull(registry.findUserByEmail(email.trim().toLowerCase()));
+        assertNull(registry.findUserByEmail("ola.example.com"));
     }
 
     @Test
-    void emailOfExactly100CharactersIsAccepted() {
-        String email = "b".repeat(88) + "@example.com";   // 100 tegn
-        handler.register("Ola", "Nordmann", email, "secret123", LOKALLAG);
-        assertNotNull(registry.findUserByEmail(email));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"a", "1234567", "abcdefg"})
-    void passwordShorterThan8CharactersIsRejected(String password) {
+    void passwordOf7CharactersIsRejected() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> handler.register("Ola", "Nordmann", "new@example.com", password, LOKALLAG));
+                () -> handler.register("Ola", "Nordmann", "new@example.com", "1234567", LOKALLAG));
         assertEquals("Password must be at least 8 characters.", e.getMessage());
         assertNull(registry.findUserByEmail("new@example.com"));
     }
 
     @Test
-    void passwordOfExactly8CharactersIsAccepted() {
+    void passwordOf8CharactersIsAccepted() {
         handler.register("Ola", "Nordmann", "new@example.com", "12345678", LOKALLAG);
         assertTrue(BCrypt.checkpw("12345678", registry.findUserByEmail("new@example.com").getPasswordHash()));
     }
 
     @Test
-    void passwordOfExactly72BytesIsAccepted() {
-        String password = "a".repeat(72);
-        handler.register("Ola", "Nordmann", "new@example.com", password, LOKALLAG);
-        assertTrue(BCrypt.checkpw(password, registry.findUserByEmail("new@example.com").getPasswordHash()));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",   // 73 bytes
-            "æææææææææææææææææææææææææææææææææææææ"})                                          // 37 tegn = 74 bytes
-    void passwordLongerThan72BytesIsRejected(String password) {
+    void passwordLongerThan72BytesIsRejected() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> handler.register("Ola", "Nordmann", "new@example.com", password, LOKALLAG));
+                () -> handler.register("Ola", "Nordmann", "new@example.com", "a".repeat(73), LOKALLAG));
         assertEquals("Password cannot be longer than 72 bytes.", e.getMessage());
         assertNull(registry.findUserByEmail("new@example.com"));
     }

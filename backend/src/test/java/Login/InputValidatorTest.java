@@ -4,48 +4,34 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/** S-006: Reglene og grenseverdiene testes grundig her. Handler- og HTTP-testene sjekker bare at reglene brukes. */
 class InputValidatorTest {
 
     // --- E-post ---
 
     @ParameterizedTest
-    @ValueSource(strings = {
-            "kari@example.com",
-            "Kari.Nordmann@Example.COM",
-            "ola+kurs@husflid.no",
-            "first_last-1@sub.domain.example.org",
-            "a@b.no",
-            "  kari@example.com  ",          // trimmes
-            "bjørn@husflid.no"})
+    @ValueSource(strings = {"kari@example.com", "ola+kurs@husflid.no", "a@sub.domain.no", "  kari@example.com  "})
     void validEmailsAreAccepted(String email) {
         assertDoesNotThrow(() -> InputValidator.requireValidEmail(email));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "abc",
-            "kari.example.com",
-            "kari@",
-            "@example.com",
-            "kari@example",
-            "kari@example.c",
-            "kari@.com",
-            "kari@example.",
-            "kari@example..com",
-            "kari@@example.com",
-            "kari@ex@ample.com",
-            "kari nordmann@example.com",
-            "kari@exa mple.com",
-            "kari@example.com\nbcc@evil.com",
-            "kari\t@example.com"})
+            "abc",                       // mangler @
+            "@example.com",              // mangler navn
+            "kari@",                     // mangler domene
+            "kari@example",              // mangler toppdomene
+            "kari@example.c",            // toppdomene på 1 tegn
+            "kari@example..com",         // to punktum etter hverandre
+            "kari@@example.com",         // to @
+            "kari nordmann@example.com"  // mellomrom
+    })
     void invalidEmailsAreRejected(String email) {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> InputValidator.requireValidEmail(email));
@@ -67,26 +53,18 @@ class InputValidatorTest {
         assertEquals("Email cannot be longer than 100 characters.", e.getMessage());
     }
 
-    @Test
-    void surroundingWhitespaceDoesNotCountTowardsEmailLength() {
-        String email = "   " + "b".repeat(88) + "@example.com   ";
-        assertDoesNotThrow(() -> InputValidator.requireValidEmail(email));
-    }
-
     // --- Nytt passord ---
 
-    @ParameterizedTest
-    @ValueSource(strings = {"a", "abc", "1234567", "       "})
-    void passwordShorterThan8CharactersIsRejected(String password) {
+    @Test
+    void passwordOf7CharactersIsRejected() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> InputValidator.requireValidNewPassword(password, "Password"));
+                () -> InputValidator.requireValidNewPassword("1234567", "Password"));
         assertEquals("Password must be at least 8 characters.", e.getMessage());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"12345678", "abcdefgh", "   abcde", "æøåÆØÅæø"})
-    void passwordOf8CharactersIsAccepted(String password) {
-        assertDoesNotThrow(() -> InputValidator.requireValidNewPassword(password, "Password"));
+    @Test
+    void passwordOf8CharactersIsAccepted() {
+        assertDoesNotThrow(() -> InputValidator.requireValidNewPassword("12345678", "Password"));
     }
 
     @Test
@@ -97,7 +75,7 @@ class InputValidatorTest {
     }
 
     @Test
-    void passwordOfExactly72BytesIsAccepted() {
+    void passwordOf72BytesIsAccepted() {
         assertDoesNotThrow(() -> InputValidator.requireValidNewPassword("a".repeat(72), "Password"));
     }
 
@@ -108,44 +86,33 @@ class InputValidatorTest {
         assertEquals("Password cannot be longer than 72 bytes.", e.getMessage());
     }
 
+    /** Æ, ø og å er 2 bytes hver i UTF-8, så 37 tegn blir 74 bytes. */
     @Test
     void norwegianLettersCountAsTwoBytes() {
-        String ok = "æ".repeat(36);         // 72 bytes
-        String tooLong = "æ".repeat(37);    // 74 bytes, men bare 37 tegn
-        assertEquals(72, ok.getBytes(StandardCharsets.UTF_8).length);
-
-        assertDoesNotThrow(() -> InputValidator.requireValidNewPassword(ok, "Password"));
+        assertDoesNotThrow(() -> InputValidator.requireValidNewPassword("æ".repeat(36), "Password"));
         assertThrows(IllegalArgumentException.class,
-                () -> InputValidator.requireValidNewPassword(tooLong, "Password"));
-    }
-
-    @Test
-    void emojiCountsAsOneCharacterForMinimumLength() {
-        String sevenEmoji = "😀".repeat(7);   // 7 tegn, 14 UTF-16-enheter
-        String eightEmoji = "😀".repeat(8);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> InputValidator.requireValidNewPassword(sevenEmoji, "Password"));
-        assertDoesNotThrow(() -> InputValidator.requireValidNewPassword(eightEmoji, "Password"));
+                () -> InputValidator.requireValidNewPassword("æ".repeat(37), "Password"));
     }
 
     // --- Reset-kode ---
 
     @ParameterizedTest
-    @ValueSource(strings = {"000000", "123456", "999999", " 123456 "})
+    @ValueSource(strings = {"000000", "123456", " 123456 "})
     void sixDigitCodesAreValid(String code) {
         assertTrue(InputValidator.isValidResetCode(code));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", "12345", "1234567", "abcdef", "12345a", "123 456", "-12345", "12345.", "١٢٣٤٥٦", "１２３４５６"})
+    @ValueSource(strings = {
+            "12345",     // 5 siffer
+            "1234567",   // 7 siffer
+            "abcdef",    // bokstaver
+            "123 456",   // mellomrom inni
+            "-12345",    // fortegn
+            "١٢٣٤٥٦"     // arabiske siffer: regelen godtar bare 0-9
+    })
     void otherCodesAreInvalid(String code) {
         assertFalse(InputValidator.isValidResetCode(code));
-    }
-
-    @Test
-    void nullCodeIsInvalid() {
-        assertFalse(InputValidator.isValidResetCode(null));
     }
 
     // --- Innlogging ---

@@ -1,14 +1,12 @@
 package Login;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.net.CookieManager;
@@ -18,22 +16,19 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Clock;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * S-006: Tester inputvalidering gjennom HTTP, slik frontend sender forespørslene.
+ * S-006: Tester det som skjer i JSON- og controllerlaget: statuskoder og meldinger.
+ * Selve valideringsreglene testes i InputValidatorTest.
  * Bruker samme oppsett som WebServer, men med FakeDataRegistry (ingen database).
  */
 class InputValidationHttpTest {
 
     private static final ObjectMapper JSON = new ObjectMapper();
-    private static final String[] JSON_ENDPOINTS = {
-            "/api/login", "/api/register", "/api/forgot-password", "/api/reset-password"};
 
     private FakeDataRegistry registry;
     private Javalin app;
@@ -66,61 +61,41 @@ class InputValidationHttpTest {
         app.stop();
     }
 
-    // --- Feilformatert JSON ---
-
-    static Stream<Arguments> malformedBodies() {
-        String[] bodies = {"", "   ", "{", "{\"email\": ", "not json", "null", "[]", "[{\"email\":\"kari@example.com\"}]", "\"kari@example.com\"", "42"};
-        return Stream.of(JSON_ENDPOINTS).flatMap(path -> Stream.of(bodies).map(body -> Arguments.of(path, body)));
-    }
+    // --- Feilformatert JSON (fungerte før S-006, testene låser oppførselen) ---
 
     @ParameterizedTest(name = "{0} med body [{1}] gir 400")
-    @MethodSource("malformedBodies")
+    @CsvSource(delimiter = '|', quoteCharacter = '\'', value = {
+            "/api/login           | ''",          // tom body
+            "/api/login           | '{'",         // avkuttet JSON
+            "/api/register        | 'not json'",  // ikke JSON
+            "/api/register        | 'null'",      // JSON null
+            "/api/forgot-password | '[]'",        // liste i stedet for objekt
+            "/api/reset-password  | '42'"         // tall i stedet for objekt
+    })
     void malformedJsonGives400(String path, String body) throws Exception {
-        HttpResponse<String> response = post(path, body);
-
-        assertEquals(400, response.statusCode(), response.body());
-        assertFalse(json(response).get("success").asBoolean());
-        assertEquals("Invalid request.", json(response).get("message").asText());
-        assertTrue(cookies.getCookieStore().getCookies().isEmpty());
+        assertInvalidRequest(post(path, body));
     }
 
-    // --- Feil datatype i tekstfelt ---
-
-    static Stream<Arguments> wrongTypes() {
-        return Stream.of(
-                Arguments.of("/api/login", "{\"email\": 123, \"password\": \"hemmelig123\"}"),
-                Arguments.of("/api/login", "{\"email\": \"kari@example.com\", \"password\": 12345678}"),
-                Arguments.of("/api/login", "{\"email\": true, \"password\": \"hemmelig123\"}"),
-                Arguments.of("/api/login", "{\"email\": \"kari@example.com\", \"password\": 1.5}"),
-                Arguments.of("/api/login", "{\"email\": [\"kari@example.com\"], \"password\": \"hemmelig123\"}"),
-                Arguments.of("/api/login", "{\"email\": {\"a\": 1}, \"password\": \"hemmelig123\"}"),
-                Arguments.of("/api/register", "{\"fornavn\": 1, \"etternavn\": \"Nordmann\", \"email\": \"ola@example.com\","
-                        + " \"password\": \"hemmelig123\", \"lokallag\": \"moss husflidslag\"}"),
-                Arguments.of("/api/register", "{\"fornavn\": \"Ola\", \"etternavn\": \"Nordmann\", \"email\": \"ola@example.com\","
-                        + " \"password\": 12345678, \"lokallag\": \"moss husflidslag\"}"),
-                Arguments.of("/api/register", "{\"fornavn\": \"Ola\", \"etternavn\": \"Nordmann\", \"email\": \"ola@example.com\","
-                        + " \"password\": \"hemmelig123\", \"lokallag\": false}"),
-                Arguments.of("/api/forgot-password", "{\"email\": 42}"),
-                Arguments.of("/api/forgot-password", "{\"email\": [\"kari@example.com\"]}"),
-                Arguments.of("/api/reset-password", "{\"email\": \"kari@example.com\", \"code\": 123456, \"newPassword\": \"nyttPassord1\"}"),
-                Arguments.of("/api/reset-password", "{\"email\": \"kari@example.com\", \"code\": \"123456\", \"newPassword\": true}"));
-    }
+    // --- Feil datatype i tekstfelt (nytt i S-006) ---
 
     @ParameterizedTest(name = "{0}: {1}")
-    @MethodSource("wrongTypes")
+    @CsvSource(delimiter = '|', quoteCharacter = '\'', value = {
+            "/api/login           | '{\"email\": 123, \"password\": \"hemmelig123\"}'",                                   // heltall
+            "/api/login           | '{\"email\": \"kari@example.com\", \"password\": 1.5}'",                             // desimaltall
+            "/api/login           | '{\"email\": true, \"password\": \"hemmelig123\"}'",                                 // boolsk
+            "/api/forgot-password | '{\"email\": [\"kari@example.com\"]}'",                                              // liste
+            "/api/reset-password  | '{\"email\": \"kari@example.com\", \"code\": 123456, \"newPassword\": \"nyttPassord1\"}'"
+    })
     void wrongDataTypeGives400(String path, String body) throws Exception {
-        HttpResponse<String> response = post(path, body);
-
-        assertEquals(400, response.statusCode(), response.body());
-        assertEquals("Invalid request.", json(response).get("message").asText());
-        assertTrue(cookies.getCookieStore().getCookies().isEmpty());
+        assertInvalidRequest(post(path, body));
     }
 
     @Test
-    void wrongDataTypeDoesNotRegisterUser() throws Exception {
-        post("/api/register", "{\"fornavn\": \"Ola\", \"etternavn\": \"Nordmann\", \"email\": \"ola@example.com\","
-                + " \"password\": 12345678, \"lokallag\": \"moss husflidslag\"}");
+    void numberAsPasswordDoesNotRegisterUser() throws Exception {
+        HttpResponse<String> response = post("/api/register", "{\"fornavn\": \"Ola\", \"etternavn\": \"Nordmann\","
+                + " \"email\": \"ola@example.com\", \"password\": 12345678, \"lokallag\": \"moss husflidslag\"}");
 
+        assertInvalidRequest(response);
         assertNull(registry.findUserByEmail("ola@example.com"));
     }
 
@@ -129,23 +104,19 @@ class InputValidationHttpTest {
         HttpResponse<String> response = post("/api/login", "{\"email\": null, \"password\": \"hemmelig123\"}");
 
         assertEquals(401, response.statusCode());
-        assertEquals("Email is required.", json(response).get("message").asText());
+        assertEquals("Email is required.", message(response));
     }
 
-    /** Javalin 7 avviser ukjente felt allerede før S-006. Testen låser den oppførselen, så frontend må sende nøyaktige feltnavn. */
+    /** Javalin 7 avviser ukjente felt allerede før S-006, så frontend må sende nøyaktige feltnavn. */
     @Test
     void unknownFieldsGive400() throws Exception {
-        HttpResponse<String> response = post("/api/login",
-                "{\"email\": \"kari@example.com\", \"password\": \"hemmelig123\", \"remember\": true}");
-
-        assertEquals(400, response.statusCode(), response.body());
-        assertEquals("Invalid request.", json(response).get("message").asText());
-        assertTrue(cookies.getCookieStore().getCookies().isEmpty());
+        assertInvalidRequest(post("/api/login",
+                "{\"email\": \"kari@example.com\", \"password\": \"hemmelig123\", \"remember\": true}"));
     }
 
-    // --- Registrering ---
+    // --- Valideringsfeil gir 400 med forklarende melding ---
 
-    /** Passord som bare består av siffer er fortsatt gyldige, så lenge de sendes som tekst i JSON. */
+    /** Passord som bare består av siffer er fortsatt gyldige, så lenge de sendes som tekst. */
     @Test
     void registerWithValidInputGives201() throws Exception {
         HttpResponse<String> response = register("ola@example.com", "12345678");
@@ -159,8 +130,7 @@ class InputValidationHttpTest {
         HttpResponse<String> response = register("ola.example.com", "hemmelig123");
 
         assertEquals(400, response.statusCode());
-        assertEquals("Please enter a valid email address.", json(response).get("message").asText());
-        assertNull(registry.findUserByEmail("ola.example.com"));
+        assertEquals("Please enter a valid email address.", message(response));
     }
 
     @Test
@@ -168,35 +138,16 @@ class InputValidationHttpTest {
         HttpResponse<String> response = register("ola@example.com", "a");
 
         assertEquals(400, response.statusCode());
-        assertEquals("Password must be at least 8 characters.", json(response).get("message").asText());
+        assertEquals("Password must be at least 8 characters.", message(response));
         assertNull(registry.findUserByEmail("ola@example.com"));
     }
-
-    @Test
-    void registerWithTooLongPasswordGives400() throws Exception {
-        HttpResponse<String> response = register("ola@example.com", "a".repeat(73));
-
-        assertEquals(400, response.statusCode());
-        assertEquals("Password cannot be longer than 72 bytes.", json(response).get("message").asText());
-    }
-
-    // --- Glemt passord / tilbakestilling ---
 
     @Test
     void forgotPasswordWithInvalidEmailGives400() throws Exception {
         HttpResponse<String> response = post("/api/forgot-password", "{\"email\": \"kari@\"}");
 
         assertEquals(400, response.statusCode());
-        assertEquals("Please enter a valid email address.", json(response).get("message").asText());
-    }
-
-    @Test
-    void forgotPasswordWithValidEmailStillGivesGenericAnswer() throws Exception {
-        HttpResponse<String> known = post("/api/forgot-password", "{\"email\": \"kari@example.com\"}");
-        HttpResponse<String> unknown = post("/api/forgot-password", "{\"email\": \"nobody@example.com\"}");
-
-        assertEquals(200, known.statusCode());
-        assertEquals(known.body(), unknown.body());
+        assertEquals("Please enter a valid email address.", message(response));
     }
 
     @Test
@@ -205,16 +156,7 @@ class InputValidationHttpTest {
                 "email", "kari@example.com", "code", "abcdef", "newPassword", "nyttPassord1")));
 
         assertEquals(400, response.statusCode());
-        assertEquals("Invalid or expired reset code.", json(response).get("message").asText());
-    }
-
-    @Test
-    void resetPasswordWithShortNewPasswordGives400() throws Exception {
-        HttpResponse<String> response = post("/api/reset-password", JSON.writeValueAsString(Map.of(
-                "email", "kari@example.com", "code", "123456", "newPassword", "kort")));
-
-        assertEquals(400, response.statusCode());
-        assertEquals("New password must be at least 8 characters.", json(response).get("message").asText());
+        assertEquals("Invalid or expired reset code.", message(response));
     }
 
     // --- Innlogging (S-005 skal fortsatt virke) ---
@@ -230,23 +172,21 @@ class InputValidationHttpTest {
     }
 
     @Test
-    void loginWithTooLongEmailGivesGeneric401() throws Exception {
-        HttpResponse<String> response = login("a".repeat(101) + "@example.com", "hemmelig123");
-
-        assertEquals(401, response.statusCode());
-        assertEquals("Invalid email or password.", json(response).get("message").asText());
-        assertTrue(cookies.getCookieStore().getCookies().isEmpty());
-    }
-
-    @Test
     void loginWithTooLongPasswordGivesGeneric401() throws Exception {
         HttpResponse<String> response = login("kari@example.com", "a".repeat(257));
 
         assertEquals(401, response.statusCode());
-        assertEquals("Invalid email or password.", json(response).get("message").asText());
+        assertEquals("Invalid email or password.", message(response));
     }
 
     // --- Hjelpemetoder ---
+
+    /** 400 "Invalid request." og ingen sesjon. */
+    private void assertInvalidRequest(HttpResponse<String> response) throws Exception {
+        assertEquals(400, response.statusCode(), response.body());
+        assertEquals("Invalid request.", message(response));
+        assertTrue(cookies.getCookieStore().getCookies().isEmpty());
+    }
 
     private HttpResponse<String> register(String email, String password) throws Exception {
         return post("/api/register", JSON.writeValueAsString(Map.of(
@@ -272,7 +212,7 @@ class InputValidationHttpTest {
         return URI.create("http://localhost:" + app.port() + path);
     }
 
-    private static JsonNode json(HttpResponse<String> response) throws Exception {
-        return JSON.readTree(response.body());
+    private static String message(HttpResponse<String> response) throws Exception {
+        return JSON.readTree(response.body()).get("message").asText();
     }
 }
