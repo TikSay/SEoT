@@ -590,3 +590,91 @@ footer::before {
   color: #333;
 }
 
+
+/*redigering side*/
+.profil-box .input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.profil-box .input-group label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.profil-box .input-group input,
+.profil-box .input-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: var(--font-main);
+    box-sizing: border-box;
+}
+
+.profil-box .by-options {
+    background-color: white;
+}
+
+.profil-box .main-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 15px 30px;
+    background-color: var(--primary-red);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.profil-box .main-btn[style] {
+    background-color: #333 !important;
+}
+
+/*Sistenytt*/
+.news-card{
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.news-img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.news-content {
+  padding: 15px;
+}
+
+.news-date {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 10px;
+}
+
+.news-content h3 {
+  font-size: 18px;
+  margin: 0 0 10px;
+}
+
+.news-content p {
+  line-height: 1.5;
+}
+
+.news-content .btn-secondary {
+  display: block;
+  margin-left: auto;
+  margin-top: 20px;
+}
