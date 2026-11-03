@@ -76,6 +76,18 @@ public class WebServer {
         config.routes.post("/login", controller::loginForm);
         config.routes.get("/account", controller::account);
         config.routes.post("/logout", controller::logout);
+
+        // S-007: sikkerhetsnett for feil som ingen controller fanger. Detaljene logges, brukeren får en generell melding.
+        config.routes.exception(Exception.class, (e, ctx) -> {
+            System.err.println("Unexpected error on " + ctx.method() + " " + ctx.path() + ": " + e);
+            ctx.status(500).json(new LoginResult(false, "Something went wrong. Please try again later."));
+        });
+        // S-007: ukjente /api-ruter svarer med JSON, så React alltid kan lese svaret med response.json()
+        config.routes.error(404, "*", ctx -> {
+            if (ctx.path().startsWith("/api/")) {
+                ctx.json(new LoginResult(false, "Not found."));
+            }
+        });
     }
 
     /**

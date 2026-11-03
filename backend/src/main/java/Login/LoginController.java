@@ -44,7 +44,7 @@ public class LoginController {
             if (result.isSuccess()) {
                 sessionUser.logIn(ctx, result.getUser());
             }
-            ctx.status(result.isSuccess() ? 200 : 401).json(result);
+            ctx.status(result.isSuccess() ? 200 : failureStatus(request.getEmail(), request.getPassword())).json(result);
         } catch (RuntimeException e) {
             System.err.println("Login error: " + e.getMessage());
             ctx.status(500).json(new LoginResult(false, "Login is unavailable right now. Please try again later."));
@@ -77,16 +77,18 @@ public class LoginController {
 
     /** POST /login: HTML-skjemaet. Lager en sesjon og sender brukeren til /account hvis innloggingen gikk bra. */
     public void loginForm(Context ctx) {
+        String email = ctx.formParam("email");
+        String password = ctx.formParam("password");
         LoginResult result;
         try {
-            result = handler.login(ctx.formParam("email"), ctx.formParam("password"));
+            result = handler.login(email, password);
         } catch (RuntimeException e) {
             System.err.println("Login error: " + e.getMessage());
             showLoginPage(ctx, 500, "Login is unavailable right now. Please try again later.");
             return;
         }
         if (!result.isSuccess()) {
-            showLoginPage(ctx, 401, result.getMessage());
+            showLoginPage(ctx, failureStatus(email, password), result.getMessage());
             return;
         }
 
@@ -96,7 +98,17 @@ public class LoginController {
 
     /** GET /account: bare for innloggede. Brukeren hentes via sesjonen på serveren. */
     public void account(Context ctx) {
-        User user = sessionUser.current(ctx);
+        User user;
+        try {
+            user = sessionUser.current(ctx);
+        } catch (RuntimeException e) {
+            // S-007: samme håndtering som i me(), men med en HTML-side siden dette er en vanlig nettside
+            System.err.println("Session lookup error: " + e.getMessage());
+            ctx.status(500).header("Cache-Control", "no-store")
+                    .html("<!DOCTYPE html><html lang=\"no\"><head><meta charset=\"UTF-8\"><title>Feil</title></head>"
+                            + "<body><p>Kontosiden er ikke tilgjengelig akkurat nå. Prøv igjen senere.</p></body></html>");
+            return;
+        }
         if (user == null) {
             ctx.redirect("/login.html");
             return;
@@ -132,6 +144,12 @@ public class LoginController {
     public void logout(Context ctx) {
         sessionUser.logOut(ctx);
         ctx.redirect("/login.html", HttpStatus.SEE_OTHER);
+    }
+
+    /** S-007: et tomt felt er ugyldig input (400). Feil e-post eller passord gir 401. */
+    private static int failureStatus(String email, String password) {
+        boolean missingField = email == null || email.isBlank() || password == null || password.isBlank();
+        return missingField ? 400 : 401;
     }
 
     private void showLoginPage(Context ctx, int status, String message) {
