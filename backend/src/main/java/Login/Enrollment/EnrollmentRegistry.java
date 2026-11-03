@@ -13,6 +13,6 @@ public interface EnrollmentRegistry {
 
     boolean isMember(String email);
 
-    /** Kaster IllegalArgumentException hvis e-posten allerede er påmeldt kurset. */
+    /** Kaster EnrollmentConflictException hvis e-posten allerede er påmeldt kurset. */
     void addEnrollment(EnrollmentRequest request, BigDecimal pris);
 }

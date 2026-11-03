@@ -5,6 +5,9 @@ import java.sql.*;
 
 public class DatabaseEnrollmentRegistry implements EnrollmentRegistry {
 
+    /** MySQL-feilkode for "Duplicate entry" (brudd på UNIQUE-nøkkel). */
+    private static final int MYSQL_DUPLICATE_ENTRY = 1062;
+
     private final String url;
     private final String dbUser;
     private final String dbPassword;
@@ -75,11 +78,18 @@ public class DatabaseEnrollmentRegistry implements EnrollmentRegistry {
 
             ps.executeUpdate();
 
-        } catch (SQLIntegrityConstraintViolationException e) {
-            throw new IllegalArgumentException("This email is already enrolled in this course.");
         } catch (SQLException e) {
+            // S-014: bare en ekte duplikat gir 409. Andre integritetsbrudd (f.eks. kurset er slettet) er databasefeil (500).
+            if (isDuplicateEntry(e)) {
+                throw new EnrollmentConflictException("This email is already enrolled in this course.");
+            }
             throw new RuntimeException("Database error during enrollment: " + e.getMessage(), e);
         }
+    }
+
+    /** True bare når MySQL sier "Duplicate entry", ikke ved andre integritetsbrudd som fremmednøkkel eller NOT NULL. */
+    static boolean isDuplicateEntry(SQLException e) {
+        return e instanceof SQLIntegrityConstraintViolationException && e.getErrorCode() == MYSQL_DUPLICATE_ENTRY;
     }
 
     /** Kjører en spørring som gir ett tall tilbake, f.eks. COUNT(*). */
