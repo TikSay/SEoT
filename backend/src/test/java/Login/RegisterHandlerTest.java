@@ -91,6 +91,54 @@ class RegisterHandlerTest {
         assertNull(registry.findUserByEmail(email));
     }
 
+    // --- S-006: reglene testes i InputValidatorTest, her sjekker vi bare at RegisterHandler bruker dem ---
+
+    @Test
+    void invalidEmailFormatIsRejected() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.register("Ola", "Nordmann", "ola.example.com", "secret123", LOKALLAG));
+        assertEquals("Please enter a valid email address.", e.getMessage());
+        assertNull(registry.findUserByEmail("ola.example.com"));
+    }
+
+    @Test
+    void passwordOf7CharactersIsRejected() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.register("Ola", "Nordmann", "new@example.com", "1234567", LOKALLAG));
+        assertEquals("Password must be at least 8 characters.", e.getMessage());
+        assertNull(registry.findUserByEmail("new@example.com"));
+    }
+
+    @Test
+    void passwordOf8CharactersIsAccepted() {
+        handler.register("Ola", "Nordmann", "new@example.com", "12345678", LOKALLAG);
+        assertTrue(BCrypt.checkpw("12345678", registry.findUserByEmail("new@example.com").getPasswordHash()));
+    }
+
+    @Test
+    void passwordLongerThan72BytesIsRejected() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.register("Ola", "Nordmann", "new@example.com", "a".repeat(73), LOKALLAG));
+        assertEquals("Password cannot be longer than 72 bytes.", e.getMessage());
+        assertNull(registry.findUserByEmail("new@example.com"));
+    }
+
+    @Test
+    void passwordIsNotTrimmedBeforeLengthCheck() {
+        handler.register("Ola", "Nordmann", "new@example.com", "  abc123", LOKALLAG);
+        assertTrue(BCrypt.checkpw("  abc123", registry.findUserByEmail("new@example.com").getPasswordHash()));
+    }
+
+    @Test
+    void invalidInputDoesNotQueryRegistry() {
+        int before = registry.getCallCount();
+        assertThrows(IllegalArgumentException.class,
+                () -> handler.register("Ola", "Nordmann", "ugyldig", "secret123", LOKALLAG));
+        assertThrows(IllegalArgumentException.class,
+                () -> handler.register("Ola", "Nordmann", "new@example.com", "kort", LOKALLAG));
+        assertEquals(before, registry.getCallCount());
+    }
+
     @Test
     void invalidLokallagIsRejected() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,

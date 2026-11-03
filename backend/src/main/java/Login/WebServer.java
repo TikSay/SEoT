@@ -1,8 +1,12 @@
 package Login;
 
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
+import com.fasterxml.jackson.databind.type.LogicalType;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.staticfiles.Location;
+import io.javalin.json.JavalinJackson;
 import org.eclipse.jetty.ee10.servlet.SessionHandler;
 import org.eclipse.jetty.http.HttpCookie;
 
@@ -53,6 +57,7 @@ public class WebServer {
                           RegisterController registerController,
                           ForgotPasswordController forgotPasswordController, String frontendOrigin) {
         config.jetty.port = PORT;
+        config.jsonMapper(createJsonMapper());
         config.staticFiles.add(staticFiles -> {
             staticFiles.hostedPath = "/";
             staticFiles.directory = "/public";
@@ -71,6 +76,30 @@ public class WebServer {
         config.routes.post("/login", controller::loginForm);
         config.routes.get("/account", controller::account);
         config.routes.post("/logout", controller::logout);
+
+        // S-007: sikkerhetsnett for feil som ingen controller fanger. Detaljene logges, brukeren får en generell melding.
+        config.routes.exception(Exception.class, (e, ctx) -> {
+            System.err.println("Unexpected error on " + ctx.method() + " " + ctx.path() + ": " + e);
+            ctx.status(500).json(new LoginResult(false, "Something went wrong. Please try again later."));
+        });
+        // S-007: ukjente /api-ruter svarer med JSON, så React alltid kan lese svaret med response.json()
+        config.routes.error(404, "*", ctx -> {
+            if (ctx.path().startsWith("/api/")) {
+                ctx.json(new LoginResult(false, "Not found."));
+            }
+        });
+    }
+
+    /**
+     * S-006: Javalins standard JSON-oppsett, men tall og true/false godtas ikke lenger i tekstfelt
+     * (f.eks. {"password": 12345678}). Da kaster bodyAsClass, og controllerne svarer 400 "Invalid request.".
+     * Gjelder bare felter av typen String. Felter som int og boolean oppfører seg som før.
+     */
+    private static JavalinJackson createJsonMapper() {
+        return new JavalinJackson().updateMapper(mapper -> mapper.coercionConfigFor(LogicalType.Textual)
+                .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail));
     }
 
     /**

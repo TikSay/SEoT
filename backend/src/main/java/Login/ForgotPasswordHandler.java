@@ -29,6 +29,7 @@ public class ForgotPasswordHandler {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email cannot be empty.");
         }
+        InputValidator.requireValidEmail(email);
 
         String normalizedEmail = email.trim().toLowerCase();
         UserCredentials credentials = registry.findUserByEmail(normalizedEmail);
@@ -62,6 +63,13 @@ public class ForgotPasswordHandler {
             throw new IllegalArgumentException("New password cannot be empty.");
         }
 
+        // S-006: sjekkes før databaseoppslaget, så ugyldig input verken teller som forsøk eller bruker opp koden
+        InputValidator.requireValidEmail(email);
+        if (!InputValidator.isValidResetCode(code)) {
+            throw new IllegalArgumentException(INVALID_CODE);
+        }
+        InputValidator.requireValidNewPassword(newPassword, "New password");
+
         PasswordReset reset = registry.findPasswordReset(email.trim().toLowerCase());
 
         if (reset == null
@@ -72,7 +80,15 @@ public class ForgotPasswordHandler {
             throw new IllegalArgumentException(INVALID_CODE);
         }
 
-        if (!BCrypt.checkpw(code.trim(), reset.getCodeHash())) {
+        boolean codeMatches;
+        try {
+            codeMatches = BCrypt.checkpw(code.trim(), reset.getCodeHash());
+        } catch (IllegalArgumentException e) {
+            // S-007: ødelagt hash i databasen er en intern feil (gir 500), ikke feil fra brukeren.
+            // Uten dette ville BCrypts melding ("Invalid salt version") blitt vist i svaret.
+            throw new IllegalStateException("Stored reset code hash is invalid for user " + reset.getUserId(), e);
+        }
+        if (!codeMatches) {
             registry.incrementResetAttempts(reset.getUserId());
             throw new IllegalArgumentException(INVALID_CODE);
         }

@@ -108,6 +108,51 @@ class LoginHandlerTest {
         assertEquals("Invalid email or password.", result.getMessage());
     }
 
+    // --- S-006: lengdegrenser, men ingen nye krav for eksisterende brukere ---
+
+    @Test
+    void existingUserWithPasswordShorterThan8CharactersCanStillLogIn() {
+        registry.addUser(2, "bob", "bob@example.com", "abc");
+        assertTrue(handler.login("bob@example.com", "abc").isSuccess());
+    }
+
+    @Test
+    void existingUserWithOddEmailFormatCanStillLogIn() {
+        registry.addUser(2, "bob", "bob", "secret123");
+        assertTrue(handler.login("bob", "secret123").isSuccess());
+    }
+
+    @Test
+    void existingUserWithPasswordLongerThan72BytesCanStillLogIn() {
+        String longPassword = "p".repeat(100);   // kunne registreres før S-006
+        registry.addUser(2, "bob", "bob@example.com", longPassword);
+        assertTrue(handler.login("bob@example.com", longPassword).isSuccess());
+    }
+
+    @Test
+    void emailLongerThan100CharactersIsRejectedWithoutQueryingRegistry() {
+        LoginResult result = handler.login("b".repeat(89) + "@example.com", "secret123");
+        assertFalse(result.isSuccess());
+        assertEquals("Invalid email or password.", result.getMessage());
+        assertNull(result.getUser());
+        assertEquals(0, registry.getCallCount());
+    }
+
+    @Test
+    void passwordOfExactly256CharactersIsChecked() {
+        String password = "p".repeat(256);
+        registry.addUser(2, "bob", "bob@example.com", password);
+        assertTrue(handler.login("bob@example.com", password).isSuccess());
+    }
+
+    @Test
+    void passwordLongerThan256CharactersIsRejectedWithoutQueryingRegistry() {
+        LoginResult result = handler.login("alice@example.com", "p".repeat(257));
+        assertFalse(result.isSuccess());
+        assertEquals("Invalid email or password.", result.getMessage());
+        assertEquals(0, registry.getCallCount());
+    }
+
     @Test
     void invalidStoredHashThrowsException() {
         registry.addRawStoredValue(2, "bob", "bob@example.com", "plaintext");

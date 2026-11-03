@@ -136,6 +136,19 @@ class ForgotPasswordHandlerTest {
         assertTrue(passwordIs(OLD_PASSWORD));
     }
 
+    /** S-007: ødelagt hash i databasen er en intern feil (500), ikke ugyldig input (400) med BCrypts egen melding. */
+    @Test
+    void corruptStoredCodeHashIsTreatedAsInternalError() {
+        registry.saveResetCode(1, "ikke-en-bcrypt-hash", clock.instant().plus(Duration.ofMinutes(15)));
+
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> handler.resetPassword(EMAIL, "123456", NEW_PASSWORD));
+
+        assertFalse(e.getMessage().contains("salt"), e.getMessage());
+        assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
+        assertTrue(passwordIs(OLD_PASSWORD));
+    }
+
     @Test
     void correctCodeIsRejectedAfterFiveWrongAttempts() {
         handler.requestReset(EMAIL);
@@ -244,6 +257,92 @@ class ForgotPasswordHandlerTest {
         assertEquals("New password cannot be empty.", e.getMessage());
         assertTrue(passwordIs(OLD_PASSWORD));
         assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
+    }
+
+    // --- S-006: reglene testes i InputValidatorTest, her sjekker vi at de brukes og hva som skjer med koden ---
+
+    @Test
+    void invalidEmailFormatIsRejectedWhenRequestingCode() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.requestReset("alice@"));
+        assertEquals("Please enter a valid email address.", e.getMessage());
+        assertEquals(0, sender.sendCount);
+    }
+
+    @Test
+    void invalidEmailFormatIsRejectedWhenResetting() {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword("alice", sender.lastCode, NEW_PASSWORD));
+
+        assertEquals("Please enter a valid email address.", e.getMessage());
+        assertTrue(passwordIs(OLD_PASSWORD));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"12345", "1234567", "abcdef"})
+    void codeThatIsNotSixDigitsIsRejectedWithoutCountingAttempt(String code) {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword(EMAIL, code, NEW_PASSWORD));
+
+        assertEquals(INVALID_CODE, e.getMessage());
+        assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
+        assertTrue(passwordIs(OLD_PASSWORD));
+    }
+
+    @Test
+    void codeWithSurroundingSpacesIsStillAccepted() {
+        handler.requestReset(EMAIL);
+
+        handler.resetPassword(EMAIL, "  " + sender.lastCode + " ", NEW_PASSWORD);
+
+        assertTrue(passwordIs(NEW_PASSWORD));
+    }
+
+    @Test
+    void newPasswordOf7CharactersIsRejected() {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword(EMAIL, sender.lastCode, "1234567"));
+
+        assertEquals("New password must be at least 8 characters.", e.getMessage());
+        assertTrue(passwordIs(OLD_PASSWORD));
+        assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
+    }
+
+    @Test
+    void weakNewPasswordDoesNotUseUpCode() {
+        handler.requestReset(EMAIL);
+        String code = sender.lastCode;
+        assertThrows(IllegalArgumentException.class, () -> handler.resetPassword(EMAIL, code, "kort"));
+
+        handler.resetPassword(EMAIL, code, NEW_PASSWORD);
+
+        assertTrue(passwordIs(NEW_PASSWORD));
+    }
+
+    @Test
+    void newPasswordOfExactly8CharactersIsAccepted() {
+        handler.requestReset(EMAIL);
+
+        handler.resetPassword(EMAIL, sender.lastCode, "12345678");
+
+        assertTrue(passwordIs("12345678"));
+    }
+
+    @Test
+    void newPasswordLongerThan72BytesIsRejected() {
+        handler.requestReset(EMAIL);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.resetPassword(EMAIL, sender.lastCode, "a".repeat(73)));
+
+        assertEquals("New password cannot be longer than 72 bytes.", e.getMessage());
+        assertTrue(passwordIs(OLD_PASSWORD));
     }
 
     @Test
