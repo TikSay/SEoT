@@ -140,11 +140,14 @@ class CourseEnrollmentRoutesTest {
         assertEquals(1, enrollments.size());
     }
 
+    /** Regresjon: den globale 404-handleren (S-007) skal ikke overskrive controllerens melding. */
     @Test
     void enrollmentInUnknownCourseGives404() throws Exception {
         HttpResponse<String> response = post("/api/enrollments", VALID_ENROLLMENT.replace("\"courseId\": 1", "\"courseId\": 99"));
 
         assertEquals(404, response.statusCode(), response.body());
+        assertFalse(json(response).get("success").asBoolean());
+        assertEquals("Course not found.", json(response).get("message").asText());
     }
 
     /** S-006: "a@" ble godtatt av den gamle sjekken (contains("@")), men avvises nå av InputValidator. */

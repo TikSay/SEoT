@@ -103,8 +103,10 @@ public class WebServer {
             ctx.status(500).json(new LoginResult(false, "Something went wrong. Please try again later."));
         });
         // S-007: ukjente /api-ruter svarer med JSON, så React alltid kan lese svaret med response.json()
+        // Javalin kjører denne for alle 404-svar. Traff forespørselen en rute (f.eks. "Course not found." fra påmeldingen),
+        // har controlleren allerede svart, og svaret beholdes.
         config.routes.error(404, "*", ctx -> {
-            if (ctx.path().startsWith("/api/")) {
+            if (ctx.path().startsWith("/api/") && ctx.endpoints().list().isEmpty()) {
                 ctx.json(new LoginResult(false, "Not found."));
             }
         });
