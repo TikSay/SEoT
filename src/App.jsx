@@ -1,14 +1,14 @@
 import './App.css';
 import { useState } from 'react';
-import Login from './Login';
-import Registrer from './Registrer';
-import Profil from './Profil';
-import GlemtPassord from './GlemtPassord';
+import Login from './sider/Login.jsx';
+import Registrer from './sider/Registrer.jsx';
+import Profil from './sider/Profil.jsx';
+import GlemtPassord from './sider/GlemtPassord.jsx';
 import husflidLogo from './assets/husflidlog.jpg';
-import Kurskalender from "./Kurskalender.jsx";
-import Paamelding from "./Påmeldning.jsx";
-import KontaktOss from "./Kontakt.jsx";
-import SisteNytt from "./SisteNytt.jsx";
+import Kurskalender from "./sider/Kurskalender.jsx";
+import Paamelding from "./sider/Påmeldning.jsx";
+import KontaktOss from "./Komponenter/Kontakt.jsx";
+import SisteNytt from "./Komponenter/SisteNytt.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');

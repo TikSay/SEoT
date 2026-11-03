@@ -1,5 +1,4 @@
-import KursCard from './KursCard.jsx'
-import SearchBar from './search.jsx';
+import KursCard from '../Komponenter/KursCard.jsx'
 import {useState} from 'react';
 
 function Kurskalender({handleVelgKurs}){
@@ -28,9 +27,6 @@ function Kurskalender({handleVelgKurs}){
                 <button className="btn-outline">
                     <i className="fa-solid fa-location-dot" style={{color: '#bd2a4e'}}></i> Se kurs nær meg
                 </button>
-            </div>
-            <div className="searchBar">
-                <SearchBar placeholder="Søk etter kurs..." searchQuery={searchQuery} onSearchChange={setSearchQuery}/>
             </div>
             <div className="filter-container">
                 <select className="filter-select">
