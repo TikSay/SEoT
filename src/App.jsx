@@ -14,11 +14,37 @@ function App() {
   const [user, setUser] = useState(null);
   const [sjekkerSesjon, setSjekkerSesjon] = useState(true);
   const [valgtKurs, setValgtKurs] = useState('');
+  // S-012 (Hiba): kurs fra GET /api/courses
+  const [courses, setCourses] = useState([]);
+  const [valgtKursId, setValgtKursId] = useState(null);
+  const [lasterKurs, setLasterKurs] = useState(true);
+  const [kursFeil, setKursFeil] = useState(false);
 
   const  handleVelgKurs = (kursTittel) => {
     setValgtKurs(kursTittel);
     setCurrentPage('paamelding');
   };
+
+  // S-013 (Hiba): påmelding fra de dynamiske kurskortene bruker kurs-ID
+  function apnePamelding(kursId) {
+    setValgtKursId(kursId);
+    setCurrentPage('pamelding');
+  }
+
+  // S-012 (Hiba): henter kommende kurs. Feil fra backend vises som feilmelding, ikke som tom liste.
+  useEffect(() => {
+    fetch('/api/courses')
+        .then(res => res.ok ? res.json() : Promise.reject(new Error('HTTP ' + res.status)))
+        .then(data => {
+          if (data.success) {
+            setCourses(data.courses);
+          } else {
+            setKursFeil(true);
+          }
+        })
+        .catch(() => setKursFeil(true))
+        .finally(() => setLasterKurs(false));
+  }, []);
 
   // Spør backend om brukeren fortsatt er innlogget, så innloggingen huskes etter refresh
   useEffect(() => {
@@ -89,57 +115,30 @@ function App() {
             <h2>Kommende Kurs- og Aktiviteter</h2>
 
             <div className="cards-grid">
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/sytreff.png')" }}></div>
-                <div className="card-content">
-                  <h3>Sytreff i Råde</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={()=> handleVelgKurs('Sytreff i Råde')}>Til Påmelding</button>
-                  </div>
-              </div>
-            </div>
+              {lasterKurs && <p>Henter kurs ...</p>}
+              {kursFeil && <p role="alert">Kursene kan ikke hentes akkurat nå. Prøv igjen senere.</p>}
+              {!lasterKurs && !kursFeil && courses.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
 
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/fletting.png')" }}></div>
-                <div className="card-content">
-                  <h3>Meksikansk fletting</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Meksikansk fletting')}>Til Påmelding</button>
+              {courses.map(kurs => (
+                  <div className="card" key={kurs.id}>
+                      <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                      <div className="card-content">
+                          <h3>{kurs.tittel}</h3>
+                          <p>{kurs.beskrivelse}</p>
+                          <ul className="card-meta">
+                              <li>Dato: {new Date(kurs.dato).toLocaleDateString('nb-NO')}</li>
+                              <li>Tid: {kurs.starttid.slice(0, 5)}</li>
+                              <li>Maks {kurs.kapasitet} deltakere</li>
+                              <li>Pris: {kurs.pris} kr</li>
+                              <li>Nivå: {kurs.nivaa}</li>
+                          </ul>
+                          <div className="card-footer">
+                              <div className="info-icon"><i className="fa-solid fa-info"></i></div>
+                              <button className="btn-secondary" onClick={() => apnePamelding(kurs.id)}>Til Påmelding</button>
+                          </div>
+                      </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/brodering.png')" }}></div>
-                <div className="card-content">
-                  <h3>Lær å brodere, plattsøm og tellesøm</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Lær å brodere, plattsøm og tellesøm')}>Til Påmelding</button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/bunad.png')" }}></div>
-                <div className="card-content">
-                  <h3>Bunadkurs</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Bunadkurs')}>Til Påmelding</button>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </section>
         </main>
@@ -162,6 +161,11 @@ function App() {
         )}
         {currentPage === 'paamelding' && (
             <Paamelding valgtKurs={valgtKurs} setCurrentPage={setCurrentPage} user={user} />
+        )}
+        {/* S-013 (Hiba): påmelding fra de dynamiske kurskortene. valgtKurs og user sendes også, så Påmeldning.jsx viser valgt kurs og innlogget bruker. */}
+        {currentPage === 'pamelding' && (
+            <Paamelding courses={courses} valgtKursId={valgtKursId} setCurrentPage={setCurrentPage}
+                        valgtKurs={courses.find(k => k.id === valgtKursId)?.tittel} user={user} />
         )}
 
         <footer>

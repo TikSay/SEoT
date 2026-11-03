@@ -1,4 +1,4 @@
-package Login;
+package Login.ConsoleResetCodeSender;
 
 /**
  * Sender reset-koden til brukeren.

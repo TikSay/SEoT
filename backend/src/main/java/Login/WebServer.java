@@ -1,5 +1,18 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.ConsoleResetCodeSender;
+import Login.Course.CourseController;
+import Login.Course.DataRegistry;
+import Login.Enrollment.EnrollmentController;
+import Login.Enrollment.EnrollmentHandler;
+import Login.Password.ForgotPassword.ForgotPasswordController;
+import Login.Password.ForgotPassword.ForgotPasswordHandler;
+import Login.Password.Login.LoginController;
+import Login.Password.Login.LoginHandler;
+import Login.Password.Login.LoginResult;
+import Login.Password.Register.RegisterController;
+import Login.Password.Register.RegisterHandler;
+
 import com.fasterxml.jackson.databind.cfg.CoercionAction;
 import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.type.LogicalType;
@@ -27,13 +40,18 @@ public class WebServer {
         SessionUser sessionUser;
         RegisterHandler registerHandler;
         ForgotPasswordHandler forgotPasswordHandler;
+        CourseController courseController;
+        EnrollmentController enrollmentController;
         try {
-            DataRegistry registry = DbConfig.load().createRegistry();
+            DbConfig dbConfig = DbConfig.load();
+            DataRegistry registry = dbConfig.createRegistry();
             handler = new LoginHandler(registry);
             sessionUser = new SessionUser(registry);
             registerHandler = new RegisterHandler(registry);
             // Sprint 1: reset-koden skrives i konsollen. Her bytter vi til ekte e-post senere.
             forgotPasswordHandler = new ForgotPasswordHandler(registry, new ConsoleResetCodeSender(), Clock.systemUTC());
+            courseController = new CourseController(dbConfig.createCourseRegistry());
+            enrollmentController = new EnrollmentController(new EnrollmentHandler(dbConfig.createEnrollmentRegistry()));
         } catch (IllegalStateException e) {
             IO.println("Configuration error: " + e.getMessage());
             return;
@@ -43,8 +61,10 @@ public class WebServer {
         ForgotPasswordController forgotPasswordController = new ForgotPasswordController(forgotPasswordHandler);
         String frontendOrigin = System.getenv("FRONTEND_ORIGIN");
 
-        Javalin.create(config -> configure(config, controller, registerController,
-                forgotPasswordController, frontendOrigin)).start();
+        Javalin.create(config -> {
+            configure(config, controller, registerController, forgotPasswordController, frontendOrigin);
+            registerCourseRoutes(config, courseController, enrollmentController);
+        }).start();
 
         IO.println("Login backend running on http://localhost:" + PORT);
         if (frontendOrigin == null || frontendOrigin.isBlank()) {
@@ -88,6 +108,16 @@ public class WebServer {
                 ctx.json(new LoginResult(false, "Not found."));
             }
         });
+    }
+
+    /**
+     * Ruter for kursvisning (S-012) og påmelding (S-013).
+     * Egen metode ved siden av configure(), så testene for innlogging ikke trenger kurs- og påmeldingsregistre.
+     */
+    static void registerCourseRoutes(JavalinConfig config, CourseController courseController,
+                                     EnrollmentController enrollmentController) {
+        config.routes.get("/api/courses", courseController::getCourses);
+        config.routes.post("/api/enrollments", enrollmentController::enroll);
     }
 
     /**

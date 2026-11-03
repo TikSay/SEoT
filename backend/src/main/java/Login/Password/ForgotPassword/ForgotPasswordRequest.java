@@ -1,4 +1,4 @@
-package Login;
+package Login.Password.ForgotPassword;
 
 /** Det frontend sender til POST /api/forgot-password: {"email": "..."} */
 public class ForgotPasswordRequest {

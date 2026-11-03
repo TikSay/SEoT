@@ -1,4 +1,10 @@
-package Login;
+package Login.Password.ForgotPassword;
+
+import Login.ConsoleResetCodeSender.ResetCodeSender;
+import Login.ConsoleResetCodeSender.UserCredentials;
+import Login.Course.DataRegistry;
+import Login.InputValidator;
+import Login.Password.ResetPassword.PasswordReset;
 
 import org.mindrot.jbcrypt.BCrypt;
 

@@ -1,5 +1,10 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.User;
+import Login.ConsoleResetCodeSender.UserCredentials;
+import Login.Course.DataRegistry;
+import Login.Password.ResetPassword.PasswordReset;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.Instant;

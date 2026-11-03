@@ -1,4 +1,4 @@
-package Login;
+package Login.ConsoleResetCodeSender;
 
 /**
  * En bruker sammen med den lagrede BCrypt-hashen av passordet.
