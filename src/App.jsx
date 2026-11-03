@@ -8,6 +8,7 @@ import husflidLogo from './assets/husflidlog.jpg';
 import Kurskalender from "./Kurskalender.jsx";
 import Paamelding from "./Påmeldning.jsx";
 import KontaktOss from "./Kontakt.jsx";
+import SisteNytt from "./SisteNytt.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -61,7 +62,7 @@ function App() {
             <main>
               <section className="left-column">
                 <h2>Siste Nytt</h2>
-                <div className="news-pic-temp"></div>
+                <SisteNytt setCurrentPage={setCurrentPage}/>
                 <div className="news-text">
               <p>Østfold Husflidslag ble stiftet 28.09.1932. Vår første bunad, Østfold kvinnebunad, ble lansert i 1936.
                 Deretter kom Østfold mannsbunad i 1990. Og Herregårdsbunad for kvinner ble lansert i 2015.</p>
@@ -76,7 +77,7 @@ function App() {
 
             <div className="cards-grid">
               <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                <div className="card-img" style={{ backgroundImage: "url('/images/sytreff.png')" }}></div>
                 <div className="card-content">
                   <h3>Sytreff i Råde</h3>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
@@ -89,7 +90,7 @@ function App() {
             </div>
 
               <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                <div className="card-img" style={{ backgroundImage: "url('/images/fletting.png')" }}></div>
                 <div className="card-content">
                   <h3>Meksikansk fletting</h3>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
@@ -102,7 +103,7 @@ function App() {
               </div>
 
               <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                <div className="card-img" style={{ backgroundImage: "url('/images/brodering.png')" }}></div>
                 <div className="card-content">
                   <h3>Lær å brodere, plattsøm og tellesøm</h3>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
@@ -115,7 +116,7 @@ function App() {
               </div>
 
               <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                <div className="card-img" style={{ backgroundImage: "url('/images/bunad.png')" }}></div>
                 <div className="card-content">
                   <h3>Bunadkurs</h3>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
