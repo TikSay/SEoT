@@ -20,15 +20,22 @@ Ny database fra bunnen av:
 mysql -u root -p < database/schema.sql
 ```
 
-Har du allerede en eldre `users`-tabell? Kjør bare migreringene du mangler, i rekkefølge:
+Har du allerede databasen fra før? Kjør bare migreringene du mangler, i rekkefølge:
 
 ```bash
 mysql -u root -p < database/migrations/001_fornavn_etternavn_lokallag.sql
 mysql -u root -p < database/migrations/002_reset_kode.sql
+mysql -u root -p < database/migrations/003_kurs_og_pamelding.sql   # Sprint 2: courses og enrollments
 ```
 
-Ta gjerne backup først: `mysqldump -u root -p --databases sprint1 > backup.sql`
-(backup-filer ignoreres av git).
+Ta gjerne backup først (fra rotmappen `SEoT/`):
+
+```bash
+mysqldump -u root -p --set-gtid-purged=OFF --databases sprint1 > database/backup.sql
+```
+
+Backupen havner i `database/`, der `backup*.sql` ignoreres av git. Den inneholder ekte data
+(også passord-hasher), så ikke legg den andre steder i prosjektet.
 
 ## 2. Lag din egen db.properties
 
@@ -72,7 +79,9 @@ Alle tar imot og svarer med JSON. Svaret har alltid `success` og `message`.
 | Endepunkt | Sender inn | Svar |
 |---|---|---|
 | `POST /api/register` | `fornavn`, `etternavn`, `email`, `password`, `lokallag` | `201` ok, `400` ved feil (f.eks. e-post finnes allerede) |
-| `POST /api/login` | `email`, `password` | `200` med `user` (id, email, fornavn, etternavn, lokallag), `401` ved feil |
+| `POST /api/login` | `email`, `password` | `200` med `user` (id, email, fornavn, etternavn, lokallag) og en sesjonscookie, `401` ved feil |
+| `GET /api/me` | – (sesjonscookien) | `200` med `user` hentet på nytt fra databasen, `401` hvis ikke innlogget eller brukeren er slettet |
+| `POST /api/logout` | – | Alltid `200`. Sletter sesjonen på serveren |
 | `POST /api/forgot-password` | `email` | Alltid `200` med samme svar, så ingen kan sjekke hvilke e-poster som finnes |
 | `POST /api/reset-password` | `email`, `code`, `newPassword` | `200` ok, `400` ved feil eller utløpt kode |
 
@@ -98,13 +107,16 @@ cd backend
 mvn test
 ```
 
-Eller høyreklikk `src/test/java` i IntelliJ → Run 'All Tests'. Det skal bli **64 tester**, alle grønne.
-Testene bruker en falsk database i minnet, så de trenger ikke MySQL.
+Eller høyreklikk `src/test/java` i IntelliJ → Run 'All Tests'. Det skal bli **75 tester**, alle grønne.
+Testene bruker en falsk database i minnet, så de trenger ikke MySQL. `SessionFlowTest` starter
+serveren på en ledig port og tester innlogging, sesjon og utlogging over HTTP.
 
 ## Greit å vite
 
-- **Innloggingen huskes ikke etter refresh.** Backend lager ingen sesjon for `/api/login` ennå,
-  så brukeren må logge inn på nytt. Det kommer senere med sesjon og `GET /api/me`.
+- **Innlogging bruker sesjon på serveren.** Sesjonen lagrer bare bruker-ID, og utløper etter
+  30 min uten aktivitet. Cookien er `HttpOnly` og `SameSite=Lax`. Sesjonene ligger i minnet,
+  så alle blir logget ut når backend startes på nytt. Trenger du innlogget bruker i en ny
+  controller, bruk `SessionUser.current(ctx)` (gir `null` hvis ingen er logget inn).
 - **`src/main/resources/public/login.html` må ligge der foreløpig.** Den gamle HTML-innloggingen
   leser den når serveren starter. React er den ordentlige frontenden.
 - **Feilmeldingene fra backend er på engelsk** (f.eks. «Invalid email or password.»).

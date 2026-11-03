@@ -2,24 +2,27 @@ package Login;
 
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
-/** Tar imot innlogging fra frontend (JSON) og fra HTML-skjemaet, og sender det videre til LoginHandler. */
+/**
+ * Tar imot innlogging fra frontend (JSON) og fra HTML-skjemaet, og sender det videre til LoginHandler.
+ * Begge veiene lager samme type sesjon via SessionUser.
+ */
 public class LoginController {
 
-    private static final String SESSION_USER = "user";
     private static final String ERROR_PLACEHOLDER = "<!-- login-error -->";
 
     private final LoginHandler handler;
+    private final SessionUser sessionUser;
     private final String loginPage;
 
-    public LoginController(LoginHandler handler) {
+    public LoginController(LoginHandler handler, SessionUser sessionUser) {
         this.handler = handler;
+        this.sessionUser = sessionUser;
         this.loginPage = readLoginPage();
     }
 
@@ -38,11 +41,38 @@ public class LoginController {
 
         try {
             LoginResult result = handler.login(request.getEmail(), request.getPassword());
+            if (result.isSuccess()) {
+                sessionUser.logIn(ctx, result.getUser());
+            }
             ctx.status(result.isSuccess() ? 200 : 401).json(result);
         } catch (RuntimeException e) {
             System.err.println("Login error: " + e.getMessage());
             ctx.status(500).json(new LoginResult(false, "Login is unavailable right now. Please try again later."));
         }
+    }
+
+    /** GET /api/me: hvem er logget inn? Brukes av React når siden lastes, så innloggingen huskes etter refresh. */
+    public void me(Context ctx) {
+        ctx.header("Cache-Control", "no-store");
+        User user;
+        try {
+            user = sessionUser.current(ctx);
+        } catch (RuntimeException e) {
+            System.err.println("Session lookup error: " + e.getMessage());
+            ctx.status(500).json(new LoginResult(false, "Login is unavailable right now. Please try again later."));
+            return;
+        }
+        if (user == null) {
+            ctx.status(401).json(new LoginResult(false, "Not logged in."));
+            return;
+        }
+        ctx.json(new LoginResult(true, "Logged in.", user));
+    }
+
+    /** POST /api/logout: avslutter sesjonen. Svarer alltid 200, også om brukeren allerede var logget ut. */
+    public void apiLogout(Context ctx) {
+        sessionUser.logOut(ctx);
+        ctx.json(new LoginResult(true, "Logged out."));
     }
 
     /** POST /login: HTML-skjemaet. Lager en sesjon og sender brukeren til /account hvis innloggingen gikk bra. */
@@ -60,20 +90,13 @@ public class LoginController {
             return;
         }
 
-        // Lag en ny sesjon, så en gammel sesjons-ID ikke kan gjenbrukes etter innlogging (session fixation)
-        HttpSession oldSession = ctx.req().getSession(false);
-        if (oldSession != null) {
-            oldSession.invalidate();
-        }
-        HttpSession session = ctx.req().getSession(true);
-        session.setAttribute(SESSION_USER, result.getUser());  // bare User, aldri passord-hashen
+        sessionUser.logIn(ctx, result.getUser());
         ctx.redirect("/account", HttpStatus.SEE_OTHER);
     }
 
-    /** GET /account: bare for innloggede. All info hentes fra sesjonen på serveren. */
+    /** GET /account: bare for innloggede. Brukeren hentes via sesjonen på serveren. */
     public void account(Context ctx) {
-        HttpSession session = ctx.req().getSession(false);   // false: lager ikke sesjon for besøkende som ikke er logget inn
-        User user = session == null ? null : (User) session.getAttribute(SESSION_USER);
+        User user = sessionUser.current(ctx);
         if (user == null) {
             ctx.redirect("/login.html");
             return;
@@ -107,10 +130,7 @@ public class LoginController {
 
     /** POST /logout: avslutter sesjonen. */
     public void logout(Context ctx) {
-        HttpSession session = ctx.req().getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+        sessionUser.logOut(ctx);
         ctx.redirect("/login.html", HttpStatus.SEE_OTHER);
     }
 

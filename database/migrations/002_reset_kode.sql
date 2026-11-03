@@ -1,5 +1,5 @@
 -- Kolonner for glemt passord: hash av reset-koden, utløpstid og antall feil forsøk.
--- Kjøres etter 001. Ta backup først: mysqldump -u root -p --databases sprint1 > backup.sql
+-- Kjøres etter 001. Ta backup først: mysqldump -u root -p --set-gtid-purged=OFF --databases sprint1 > database/backup.sql (fra rotmappen SEoT/)
 
 USE sprint1;
 
