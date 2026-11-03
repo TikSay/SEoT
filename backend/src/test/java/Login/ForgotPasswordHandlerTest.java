@@ -136,6 +136,19 @@ class ForgotPasswordHandlerTest {
         assertTrue(passwordIs(OLD_PASSWORD));
     }
 
+    /** S-007: ødelagt hash i databasen er en intern feil (500), ikke ugyldig input (400) med BCrypts egen melding. */
+    @Test
+    void corruptStoredCodeHashIsTreatedAsInternalError() {
+        registry.saveResetCode(1, "ikke-en-bcrypt-hash", clock.instant().plus(Duration.ofMinutes(15)));
+
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> handler.resetPassword(EMAIL, "123456", NEW_PASSWORD));
+
+        assertFalse(e.getMessage().contains("salt"), e.getMessage());
+        assertEquals(0, registry.findPasswordReset(EMAIL).getAttempts());
+        assertTrue(passwordIs(OLD_PASSWORD));
+    }
+
     @Test
     void correctCodeIsRejectedAfterFiveWrongAttempts() {
         handler.requestReset(EMAIL);

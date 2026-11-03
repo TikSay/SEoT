@@ -103,7 +103,7 @@ class InputValidationHttpTest {
     void jsonNullInFieldIsTreatedAsMissing() throws Exception {
         HttpResponse<String> response = post("/api/login", "{\"email\": null, \"password\": \"hemmelig123\"}");
 
-        assertEquals(401, response.statusCode());
+        assertEquals(400, response.statusCode());   // S-007: manglende felt gir 400, ikke 401
         assertEquals("Email is required.", message(response));
     }
 
