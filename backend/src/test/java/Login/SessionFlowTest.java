@@ -42,14 +42,18 @@ class SessionFlowTest {
                 BCrypt.hashpw("hemmelig123", BCrypt.gensalt(4)),
                 "halden husflidslag");
 
+        SessionUser sessionUser = new SessionUser(registry);
+
         LoginController loginController = new LoginController(new LoginHandler(registry), new SessionUser(registry));
         RegisterController registerController = new RegisterController(new RegisterHandler(registry));
         ForgotPasswordController forgotPasswordController = new ForgotPasswordController(
                 new ForgotPasswordHandler(registry, new ConsoleResetCodeSender(), Clock.systemUTC()));
 
+        UserController userController = new UserController(registry, sessionUser);
+
         app = Javalin.create(config -> {
-            WebServer.configure(config, loginController, registerController, forgotPasswordController, null);
-            config.jetty.port = 0;  // ledig port, så testen ikke krasjer med en server som allerede kjører
+            WebServer.configure(config, loginController, registerController, forgotPasswordController, userController, null);
+            config.jetty.port = 0;
         }).start();
 
         cookies = new CookieManager();

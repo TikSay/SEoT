@@ -209,4 +209,20 @@ public class DatabaseRegistry implements DataRegistry {
             );
         }
     }
+
+    @Override
+    public void updateUser(int userId, String fornavn, String etternavn, String email, String lokallag) {
+        String sql = "UPDATE users SET fornavn = ?, etternavn = ?, email = ?, lokallag = ? WHERE id = ?";
+        try (Connection con = DriverManager.getConnection(url, dbUser, dbPassword);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, fornavn);
+            ps.setString(2, etternavn);
+            ps.setString(3, email);
+            ps.setString(4, lokallag);
+            ps.setInt(5, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Database error during user update: " + e.getMessage(), e);
+        }
+    }
 }
