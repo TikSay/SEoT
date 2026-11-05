@@ -1,0 +1,64 @@
+/*Footer*/
+.site-footer {
+  background-color: var(--primary-red);
+  color: white;
+  padding: 40px 30px 20px;
+  margin-top: 60px;
+  text-align: left;
+}
+
+/* Navigasjon */
+.footer-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.footer-nav section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-nav h3 {
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 10px;
+  color: white;
+}
+
+
+/* Knapper */
+.footer-nav button {
+  background: none;
+  border: none;
+  color: white;
+  font-family: var(--font-main);
+  font-size: 14px;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+}
+
+.footer-nav button:hover {
+  text-decoration: underline;
+}
+
+/* Nederste del av footer */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  margin-top: 35px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.site-footer::before {
+  content: none;
+  display: none;
+}

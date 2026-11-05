@@ -198,34 +198,6 @@ h2 {
   cursor: pointer;
 }
 
-/*footer*/
-footer {
-  margin-top: 60px;
-  text-align: center;
-  position: relative;
-}
-
-footer::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #333;
-  z-index: 1;
-}
-
-.footer-logo {
-  position: relative;
-  z-index: 2;
-  background-color: #fff;
-  padding: 0 20px;
-  display: inline-block;
-  color: var(--primary-red);
-  font-size: 30px;
-}
-
 /*Login*/
 .login-main {
   display: flex;

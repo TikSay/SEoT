@@ -9,6 +9,7 @@ import Kurskalender from "./sider/Kurskalender.jsx";
 import Paamelding from "./sider/Påmeldning.jsx";
 import KontaktOss from "./Komponenter/Kontakt.jsx";
 import SisteNytt from "./Komponenter/SisteNytt.jsx";
+import Footer from "./Komponenter/Footer.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -155,16 +156,9 @@ function App() {
             <KontaktOss setCurrentpage={setCurrentPage} />
         )}
 
-        <footer>
-          <div className="footer-logo">
-            <img
-                src={husflidLogo}
-                alt="Østfolds Husflidslag Logo"
-                style={{ width: '60px', height: 'auto' }}
-            />
+       <Footer setCurrentPage={setCurrentPage} />
+            
           </div>
-        </footer>
-      </div>
   );
 }
 
