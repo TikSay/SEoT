@@ -8,8 +8,8 @@ public class RegisterHandler {
 
     private static final int MAX_NAME_LENGTH = 50;       // samme som users.fornavn / users.etternavn VARCHAR(50)
 
-    // Må stemme med valgene i «By adresse»-menyen i Registrer.jsx
-    private static final Set<String> LOKALLAG = Set.of(
+    // Må stemme med valgene i «By adresse»-menyen i Registrer.jsx og Profil.jsx. Brukes også av UserController (S-017).
+    static final Set<String> LOKALLAG = Set.of(
             "fredrikstad husflidslag", "halden husflidslag", "hobøl husflidslag",
             "indre østfold husflidslag", "moss husflidslag", "rygge husflidslag",
             "råde husflidslag", "sarpsborg husflidslag");
