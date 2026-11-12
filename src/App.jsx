@@ -1,12 +1,23 @@
 import './App.css';
 import { useState, useEffect } from 'react';
-import Login from './Login';
-import Registrer from './Registrer';
-import Profil from './Profil';
-import GlemtPassord from './GlemtPassord';
+import Login from './sider/Login.jsx';
+import Registrer from './sider/Registrer.jsx';
+import Profil from './sider/Profil.jsx';
+import GlemtPassord from './sider/GlemtPassord.jsx';
 import husflidLogo from './assets/husflidlog.jpg';
-import Kurskalender from "./Kurskalender.jsx";
-import Paamelding from "./Påmeldning.jsx";
+import Kurskalender from "./sider/Kurskalender.jsx";
+import Paamelding from "./sider/Påmeldning.jsx";
+import KontaktOss from "./Komponenter/Kontakt.jsx";
+import SisteNytt from "./Komponenter/SisteNytt.jsx";
+
+// Kursbilder fra public/images (Sander, ba46566), koblet på kursnavn.
+// Forsiden viser bare kursene som har et bilde her, slik det opprinnelige designet med fire kurs.
+const kursBilder = {
+  'Sytreff i Råde': '/images/sytreff.png',
+  'Meksikansk fletting': '/images/fletting.png',
+  'Lær å brodere, plattsøm og tellesøm': '/images/brodering.png',
+  'Bunadkurs': '/images/bunad.png',
+};
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -19,6 +30,8 @@ function App() {
   const [valgtKursId, setValgtKursId] = useState(null);
   const [lasterKurs, setLasterKurs] = useState(true);
   const [kursFeil, setKursFeil] = useState(false);
+  // Kurs med bilde, til forsiden. Hele listen (courses) brukes fortsatt av påmeldingen.
+  const forsideKurs = courses.filter(kurs => kursBilder[kurs.tittel]);
 
   const  handleVelgKurs = (kursTittel) => {
     setValgtKurs(kursTittel);
@@ -77,7 +90,7 @@ function App() {
           <nav className="main-nav">
             <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); }}>AKTUELT</a>
             <a href="#">FAGSIDER</a>
-            <a href="#">KONTAKT OSS</a>
+            <a href="#" onClick={(e)=> {e.preventDefault(); setCurrentPage('kontakt')}}>KONTAKT OSS</a>
           </nav>
 
           <nav className="icon-nav">
@@ -101,7 +114,7 @@ function App() {
             <main>
               <section className="left-column">
                 <h2>Siste Nytt</h2>
-                <div className="news-pic-temp"></div>
+                <SisteNytt setCurrentPage={setCurrentPage}/>
                 <div className="news-text">
               <p>Østfold Husflidslag ble stiftet 28.09.1932. Vår første bunad, Østfold kvinnebunad, ble lansert i 1936.
                 Deretter kom Østfold mannsbunad i 1990. Og Herregårdsbunad for kvinner ble lansert i 2015.</p>
@@ -117,11 +130,11 @@ function App() {
             <div className="cards-grid">
               {lasterKurs && <p>Henter kurs ...</p>}
               {kursFeil && <p role="alert">Kursene kan ikke hentes akkurat nå. Prøv igjen senere.</p>}
-              {!lasterKurs && !kursFeil && courses.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
+              {!lasterKurs && !kursFeil && forsideKurs.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
 
-              {courses.map(kurs => (
+              {forsideKurs.map(kurs => (
                   <div className="card" key={kurs.id}>
-                      <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
+                      <div className="card-img" style={{ backgroundImage: `url('${kursBilder[kurs.tittel]}')` }}></div>
                       <div className="card-content">
                           <h3>{kurs.tittel}</h3>
                           <p>{kurs.beskrivelse}</p>
@@ -166,6 +179,10 @@ function App() {
         {currentPage === 'pamelding' && (
             <Paamelding courses={courses} valgtKursId={valgtKursId} setCurrentPage={setCurrentPage}
                         valgtKurs={courses.find(k => k.id === valgtKursId)?.tittel} user={user} />
+        )}
+
+        {currentPage === 'kontakt' && (
+            <KontaktOss setCurrentpage={setCurrentPage} />
         )}
 
         <footer>

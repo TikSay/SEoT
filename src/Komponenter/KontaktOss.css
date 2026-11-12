@@ -1,0 +1,48 @@
+/* Layout for kontakt-siden */
+.kontakt-main {
+    grid-template-columns: 1fr;
+    margin-top: 30px;
+}
+
+.kontakt-card {
+    flex-direction: row;
+}
+
+.kontakt-card-img {
+    width: 140px;
+    min-width: 140px;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Avdeling / Rolle */
+.kontakt-avdeling {
+    font-weight: bold;
+    color: var(--primary-red);
+    margin-bottom: 10px;
+}
+
+/* Kontaktpunkter (telefon, e-post) */
+.kontakt-detalj {
+    margin: 6px 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.kontakt-detalj i {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+.kontakt-detalj a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.kontakt-detalj a:hover {
+    text-decoration: underline;
+    color: var(--primary-red);
+}
