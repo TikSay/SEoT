@@ -5,10 +5,11 @@ import Registrer from './sider/Registrer.jsx';
 import Profil from './sider/Profil.jsx';
 import GlemtPassord from './sider/GlemtPassord.jsx';
 import husflidLogo from './assets/husflidlog.jpg';
-import Kurskalender from "./sider/Kurskalender.jsx";
-import Paamelding from "./sider/Påmeldning.jsx";
-import KontaktOss from "./Komponenter/Kontakt.jsx";
-import SisteNytt from "./Komponenter/SisteNytt.jsx";
+import Kurskalender from './sider/Kurskalender.jsx';
+import KursInfo from './sider/KursInfo.jsx';
+import Paamelding from './sider/Påmeldning.jsx';
+import KontaktOss from './Komponenter/Kontakt.jsx';
+import SisteNytt from './Komponenter/SisteNytt.jsx';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -16,8 +17,13 @@ function App() {
   const [user, setUser] = useState(null);
   const [valgtKurs, setValgtKurs] = useState('');
 
+  const handleSeKurs = (kursObjekt) => {
+    setValgtKurs(kursObjekt);
+    setCurrentPage('kursinfo');
+  };
+
   const  handleVelgKurs = (kursTittel) => {
-    setValgtKurs(kursTittel);
+    setValgtKurs({title: kursTittel});
     setCurrentPage('paamelding');
   };
 
@@ -145,10 +151,14 @@ function App() {
         )}
 
         {currentPage === 'kurskalender' && (
-            <Kurskalender handleVelgKurs={handleVelgKurs} />
+            <Kurskalender handleSeKurs={handleSeKurs}/>
         )}
+        {currentPage === 'kursinfo' && (
+            <KursInfo kurs={valgtKurs} setCurrentPage={setCurrentPage} />
+        )}
+
         {currentPage === 'paamelding' && (
-            <Paamelding valgtKurs={valgtKurs} setCurrentPage={setCurrentPage} user={user} />
+            <Paamelding valgtKurs={valgtKurs?.title || valgtKurs} setCurrentPage={setCurrentPage} user={user} />
         )}
 
         {currentPage === 'kontakt' && (

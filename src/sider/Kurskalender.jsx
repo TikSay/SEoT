@@ -1,23 +1,97 @@
 import KursCard from '../Komponenter/KursCard.jsx'
 import {useState} from 'react';
 
-function Kurskalender({handleVelgKurs}){
+function Kurskalender({ handleSeKurs }) {
+    //dummy-data! Dette er en liste med objekter som fungerer
+    // Slett når du får inn APIkall//
+    const [kursListe] = useState([
+        {
+            id: 1,
+            title: 'Nissekurs, nålefilting',
+            image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
+            tags: ['Annet', 'Kurs'],
+            lokallag: 'Halden',
+            kategori: 'Annet',
+            type: 'Kurs',
+            dato: '15. november 2026, kl. 18:00',
+            pris: '450 kr (Medlem) / 600 kr (Ikke-medlem)',
+            description: 'Lær grunnleggende nålefilting og lag dine egne julenisser i ull.'
+        },
+        {
+            id: 2,
+            title: 'Nissekurs, nålefilting',
+            image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
+            tags: ['Annet', 'Kurs'],
+            lokallag: 'Halden',
+            kategori: 'Annet',
+            type: 'Kurs',
+            dato: '15. november 2026, kl. 18:00',
+            pris: '450 kr (Medlem) / 600 kr (Ikke-medlem)',
+            description: 'Lær grunnleggende nålefilting og lag dine egne julenisser i ull.'
+        },
+        {
+            id: 3,
+            title: 'Nissekurs, nålefilting',
+            image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
+            tags: ['Annet', 'Kurs'],
+            lokallag: 'Halden',
+            kategori: 'Annet',
+            type: 'Kurs',
+            dato: '15. november 2026, kl. 18:00',
+            pris: '450 kr (Medlem) / 600 kr (Ikke-medlem)',
+            description: 'Lær grunnleggende nålefilting og lag dine egne julenisser i ull.'
+        },
+        {
+            id: 4,
+            title: 'Nissekurs, nålefilting',
+            image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
+            tags: ['Annet', 'Kurs'],
+            lokallag: 'Halden',
+            kategori: 'Annet',
+            type: 'Kurs',
+            dato: '15. november 2026, kl. 18:00',
+            pris: '450 kr (Medlem) / 600 kr (Ikke-medlem)',
+            description: 'Lær grunnleggende nålefilting og lag dine egne julenisser i ull.'
+        },
+        {
+            id: 5,
+            title: 'Nissekurs, nålefilting',
+            image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
+            tags: ['Annet', 'Kurs'],
+            lokallag: 'Halden',
+            kategori: 'Annet',
+            type: 'Kurs',
+            dato: '15. november 2026, kl. 18:00',
+            pris: '450 kr (Medlem) / 600 kr (Ikke-medlem)',
+            description: 'Lær grunnleggende nålefilting og lag dine egne julenisser i ull.'
+        },
+        {
+            id: 6,
+            title: 'Nissekurs, nålefilting',
+            image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
+            tags: ['Annet', 'Kurs'],
+            lokallag: 'Halden',
+            kategori: 'Annet',
+            type: 'Kurs',
+            dato: '15. november 2026, kl. 18:00',
+            pris: '450 kr (Medlem) / 600 kr (Ikke-medlem)',
+            description: 'Lær grunnleggende nålefilting og lag dine egne julenisser i ull.'
+        }
+    ]);
 
-    //**kobler den til kurskalender**//
-    const [kursListe, setKursListe] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [valgtLag, setValgtLag] = useState('Alle');
+    const [valgtKategori, setValgtKategori] = useState('Alle');
+    const [valgtType, setValgtType] = useState('Alle');
 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const filtrerteKurs = kursListe.filter((kurs) => {kurs.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matcherSok = kurs.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matcherLag = valgtLag === 'Alle' || kurs.lokallag === valgtLag;
+        const matcherKategori = valgtKategori === 'Alle' || kurs.kategori === valgtKategori;
+        const matcherType = valgtType === 'Alle' || kurs.type === valgtType;
 
-    //**Plasser api kall her?**//
-    //** useEffect(() => {
-
-
-
-    const filtrerteKurs = kursListe.filter((kurs) =>
-        kurs.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+        return matcherSok && matcherLag && matcherKategori && matcherType;
+    });
 
 
 
@@ -30,17 +104,21 @@ function Kurskalender({handleVelgKurs}){
             </div>
             <div className="filter-container">
                 <select className="filter-select">
-                    <option>Husflidslag</option>
+                    <option>Husflidslag (Alle)</option>
                     <option>Halden</option>
                     <option>Moss</option>
+                    <option>Fredrikstad</option>
+                    <option>Råde</option>
                 </select>
                 <select className="filter-select">
-                    <option>Tema/kategori</option>
+                    <option>Tema/kategori (Alle)</option>
                     <option>Vev</option>
                     <option>Trearbeid</option>
+                    <option>Søm</option>
+                    <option>Annet</option>
                 </select>
                 <select className="filter-select">
-                    <option>Arrangementstype</option>
+                    <option>Arrangementstype (Alle)</option>
                     <option>Kurs</option>
                     <option>Treff</option>
                 </select>
@@ -59,30 +137,9 @@ function Kurskalender({handleVelgKurs}){
 
             <div className="results-header">
                 <h1>{filtrerteKurs.length} resultater</h1>
-
-                <div className="sorting-container">
-                    <button className="sort-btn active">
-                        <i className="fa-regular fa-calendar"></i> SORTER ETTER OPPRETTET <i
-                        className="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <button className="sort-btn">
-                        <i className="fa-regular fa-calendar"></i> SORTER ETTER STARTDATO
-                    </button>
-                    <button className="sort-btn">
-                        <i className="fa-regular fa-calendar"></i> SORTER ETTER SLUTTDATO
-                    </button>
-                </div>
-
-                <div className="pagination">
-                    <div className="pagination-controls">
-                        <button className="page-btn disabled">&lt;</button>
-                        <button className="page-btn">&gt;</button>
-                    </div>
-                    <span style={{fontSize: '14px', color: '#333'}}>Side 1 av 24</span>
-                </div>
             </div>
 
-            <div className="cards-grid2">
+            <div className="results-header">
                 {filtrerteKurs.length > 0 ? (
                     filtrerteKurs.map((kurs) => (
                         <KursCard
@@ -90,13 +147,14 @@ function Kurskalender({handleVelgKurs}){
                             title={kurs.title}
                             image={kurs.image}
                             tags={kurs.tags}
-                            onPaamelding={() => handleVelgKurs(kurs.title)}
+                            // Sender til infosiden når man klikker på kortet
+                            onPaamelding={() => handleSeKurs(kurs)}
                         />
                     ))
                 ) : (
                     <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '40px'}}>
                         <h3>Ingen kurs funnet</h3>
-                        <p>Prøv å søke etter noe annet.</p>
+                        <p>Prøv å søk etter noe annet.</p>
                     </div>
                 )}
             </div>

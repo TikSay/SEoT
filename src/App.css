@@ -501,9 +501,7 @@ footer::before {
   gap: 10px;
   font-size: 14px;
 }
-.sort-btn.active {
-  background: #fdf0f2; 
-}
+
 
 .cards-grid2 {
   display: grid;

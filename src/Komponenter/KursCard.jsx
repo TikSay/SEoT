@@ -1,6 +1,5 @@
 
 
-
 function KursCard({title, image, tags, onPaamelding}) {
     return (
         <div className="course-card" onClick={onPaamelding}>
