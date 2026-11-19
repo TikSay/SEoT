@@ -1,16 +1,24 @@
-# React + Vite
+# Østfolds husflidslag - Nettside
+Prosjektet er basert på å lage en ny og bedre løsning til applikasjonen. Frontend er laget i CSS, JavaScript og React. Backend er implementert i Java (Javalin).
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Brukergrensesnitt
+Nettsiden skal vær informerende og enkelt å navigere
+* Forsiden skal ha en oversikt over Siste Nytt og kommende Kurs og Aktiviteter
+* Bli Medlem: Tydelig knapp som man kan klikke for å regristere seg som medlem
+* Kontakt Oss: Informasjon om hvem man kan kontakte innenfor husflidslaget
+* Nettbutikk: Salg av ulike utstyr og tekstil
+* Kalender: Oversikt over alle kurs og aktiviteter både passert og kommende
+* Logg inn: Hvor man kan logge seg inn eller registrere en ny konto
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## React Compiler
+Teamet:
+Sayo - Frontend,
+Sander - Frontend,
+Hiba - Fullstack,
+Abdi - Backend,
+Liam - Backend
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+<img width="1600" height="760" alt="image" src="https://github.com/user-attachments/assets/d32330e9-d518-4337-ae66-2a296c03998c" />
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
