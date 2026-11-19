@@ -6,7 +6,7 @@ Nettsiden skal vær informerende og enkelt å navigere
 * Forsiden skal ha en oversikt over Siste Nytt og kommende Kurs og Aktiviteter
 * Bli Medlem: Tydelig knapp som man kan klikke for å regristere seg som medlem
 * Kontakt Oss: Informasjon om hvem man kan kontakte innenfor husflidslaget
-* Nettbutikk:
+* Nettbutikk: Salg av ulike utstyr og tekstil
 * Kalender: Oversikt over alle kurs og aktiviteter både passert og kommende
 * Logg inn: Hvor man kan logge seg inn eller registrere en ny konto
 
