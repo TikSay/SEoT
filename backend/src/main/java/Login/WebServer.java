@@ -20,9 +20,13 @@ import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinJackson;
+import jakarta.servlet.ServletOutputStream;
 import org.eclipse.jetty.ee10.servlet.SessionHandler;
 import org.eclipse.jetty.http.HttpCookie;
 
+import java.io.IO;
+import java.io.IOException;
+import java.lang.IO;
 import java.time.Clock;
 
 /**
@@ -34,17 +38,19 @@ import java.time.Clock;
 public class WebServer {
 
     private static final int PORT = 7070;
+    private static final ServletOutputStream IO = ;
 
-    static void main() {
+
+    static void main() throws IOException {
         LoginHandler handler;
-        SessionUser sessionUser;
+        Login.SessionUser sessionUser;
         RegisterHandler registerHandler;
         ForgotPasswordHandler forgotPasswordHandler;
         CourseController courseController;
         EnrollmentController enrollmentController;
-        UserController userController;
+        Login.UserController userController;
         try {
-            DbConfig dbConfig = DbConfig.load();
+            Login.DbConfig dbConfig = DbConfig.load();
             DataRegistry registry = dbConfig.createRegistry();
             handler = new LoginHandler(registry);
             sessionUser = new SessionUser(registry);
