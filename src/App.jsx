@@ -5,6 +5,7 @@ import Registrer from './sider/Registrer.jsx';
 import Profil from './sider/Profil.jsx';
 import GlemtPassord from './sider/GlemtPassord.jsx';
 import husflidLogo from './assets/husflidlog.jpg';
+import Footer from "./Komponenter/Footer.jsx";
 import Kurskalender from './sider/Kurskalender.jsx';
 import KursInfo from './sider/KursInfo.jsx';
 import Paamelding from './sider/Påmeldning.jsx';
@@ -165,16 +166,9 @@ function App() {
             <KontaktOss setCurrentpage={setCurrentPage} />
         )}
 
-        <footer>
-          <div className="footer-logo">
-            <img
-                src={husflidLogo}
-                alt="Østfolds Husflidslag Logo"
-                style={{ width: '60px', height: 'auto' }}
-            />
+       <Footer setCurrentPage={setCurrentPage} />
+
           </div>
-        </footer>
-      </div>
   );
 }
 
