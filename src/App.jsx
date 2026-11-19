@@ -118,9 +118,6 @@ function App() {
                   {courses.map(kurs => (
                       <div className="card" key={kurs.id}>
                         <div className="card-img" style={{backgroundImage: "url('/images/sytreff.png')"}}></div>
-                        <div className="card-img" style={{backgroundImage: "url('/images/fletting.png')"}}></div>
-                        <div className="card-img" style={{backgroundImage: "url('/images/brodering.png')"}}></div>
-                        <div className="card-img" style={{backgroundImage: "url('/images/bunad.png')"}}></div>
                         <div className="card-content">
                           <h3>{kurs.tittel}</h3>
                           <p>{kurs.beskrivelse}</p>
