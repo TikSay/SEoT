@@ -11,6 +11,8 @@ import KursInfo from './sider/KursInfo.jsx';
 import Paamelding from './sider/Påmeldning.jsx';
 import KontaktOss from './Komponenter/Kontakt.jsx';
 import SisteNytt from './Komponenter/SisteNytt.jsx';
+import Share from './Komponenter/ShareButton.jsx';
+import ShareButton from "./Komponenter/ShareButton.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -81,6 +83,8 @@ function App() {
 
           <section className="right-column">
             <h2>Kommende Kurs- og Aktiviteter</h2>
+
+
 
             <div className="cards-grid">
               <div className="card">
