@@ -1,104 +1,93 @@
-import { useState, useEffect } from 'react';
 import './KontaktOss.css';
 
+// S-020: kontaktinformasjon hentet fra Østfold Husflidslags side på husflid.no
+// (https://husflid.no/lag/ostfold-husflidslag/#contact), sjekket 13.11.2026.
+// Ligger i frontend foreløpig, siden backend ikke har et API for kontaktpersoner.
+const KILDE_URL = 'https://husflid.no/lag/ostfold-husflidslag/#contact';
+
+const hovedkontakt = {
+    navn: 'Mona Andersen',
+    adresse: ['Emil Mørchs vei 25, 2. etg. rom 1', '1653 SELLEBAKK'],
+    telefon: '91777582',
+    epost: 'ostfoldhusflid@gmail.com'
+};
+
+// Styret, i samme rekkefølge som på husflid.no. Linda P. Vallner står med to roller der.
+const styret = [
+    {navn: 'Mona Andersen', roller: ['Styreleder'], epost: 'mona@sjokkpris.no', telefon: '91777582'},
+    {navn: 'Aud Kari Holme', roller: ['Nestleder'], epost: 'Audkari.holme@gmail.com', telefon: '95879367'},
+    {navn: 'Heidi Børstad', roller: ['Sekretær'], epost: 'heidi.borstad@gmail.com', telefon: '95222155'},
+    {navn: 'Silja Devine Holhjem', roller: ['Nettansvarlig'], epost: 'siljadevine@gmail.com', telefon: '41664904'},
+    {navn: 'Linda P. Vallner', roller: ['Styremedlem', 'Ung Husflidskontakt'], epost: 'lindap.vallner@gmail.com', telefon: '97638424'},
+    {navn: 'Thore Grøtvedt', roller: ['Styremedlem'], epost: 'thoregro@gmail.com', telefon: '90135455'},
+    {navn: 'Julie Mari Brevik', roller: ['Varamedlem'], epost: 'bunad.julie@gmail.com', telefon: '99313244'}
+];
+
+// '91777582' -> '91 77 75 82'
+function visTelefon(nummer) {
+    return nummer.replace(/(\d{2})(?=\d)/g, '$1 ');
+}
+
+function Telefon({nummer}) {
+    return (
+        <p className="kontakt-detalj">
+            <i className="fa-solid fa-phone"></i>
+            <a href={`tel:+47${nummer}`}>{visTelefon(nummer)}</a>
+        </p>
+    );
+}
+
+function Epost({adresse}) {
+    return (
+        <p className="kontakt-detalj">
+            <i className="fa-solid fa-envelope"></i>
+            <a href={`mailto:${adresse}`}>{adresse}</a>
+        </p>
+    );
+}
+
 function KontaktOss() {
-    const [kontaktpersoner, setKontaktpersoner] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchKontaktpersoner = async () => {
-            try {
-                // 1. Erstatt URL-en under med ditt faktiske backend-endepunkt når API-et er klart.
-                // 2. Sørg for at backend returnerer en JSON-liste med objekter som har feltene:
-                //    - id, navn, avdeling, mobil, epost, bilde
-                const apiEndpoint = 'http://localhost:5000/api/kontaktpersoner';
-
-                const response = await fetch(apiEndpoint);
-
-                if (!response.ok) {
-                    throw new Error(`Feil ved henting av data. Status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                setKontaktpersoner(data);
-
-            } catch (err) {
-                console.warn("Kunne ikke hente fra API, faller tilbake til dummy-data midlertidig.", err);
-
-                // MIDLERTIDIG DUMMY-DATA:
-                // Dette gjør at siden fungerer visuelt frem til backend er oppe og kjører.
-                // Du kan slette denne fallbacken når API-et er ferdig.
-                setKontaktpersoner([
-                    {
-                        id: 1,
-                        navn: 'Kari Nordmann',
-                        avdeling: 'Leder / Styret',
-                        mobil: '+47 900 11 222',
-                        epost: 'kari.nordmann@husflid.no',
-                        bilde: 'https://placehold.co/200x200?text=Kari'
-                    },
-                    {
-                        id: 2,
-                        navn: 'Ola Hansen',
-                        avdeling: 'Kurs- og Aktivitetsansvarlig',
-                        mobil: '+47 911 22 333',
-                        epost: 'kurs@husflid.no',
-                        bilde: 'https://placehold.co/200x200?text=Ola'
-                    }
-                ]);
-
-                // setError("Klarte ikke laste kontaktpersoner."); // Kan aktiveres når dummy-data fjernes
-            } finally {
-                // Skrur alltid av lastevisningen når kallet er ferdig
-                setLoading(false);
-            }
-        };
-
-        fetchKontaktpersoner();
-    }, []);
-
     return (
         <main className="kontakt-main">
             <section>
                 <h2>Kontakt Oss</h2>
                 <p className="news-text">
-                    Lurer du på noe rundt våre aktiviteter, medlemskap eller kurs? Ta gjerne direkte kontakt med en av våre tillitsvalgte eller avdelingsledere nedenfor.
+                    Lurer du på noe rundt våre aktiviteter, medlemskap eller kurs? Ta gjerne kontakt med Østfold Husflidslag, eller direkte med en av de tillitsvalgte i styret nedenfor.
                 </p>
 
-                {loading && <p>Laster inn kontaktpersoner...</p>}
-                {error && <p style={{ color: 'var(--primary-red)' }}>{error}</p>}
-
-                {!loading && (
-                    <div className="cards-grid">
-                        {kontaktpersoner.map((person) => (
-                            <div className="card kontakt-card" key={person.id}>
-                                <div
-                                    className="kontakt-card-img"
-                                    style={{ backgroundImage: `url('${person.bilde}')` }}
-                                ></div>
-                                <div className="card-content">
-                                    <h3>{person.navn}</h3>
-                                    <p className="kontakt-avdeling">
-                                        {person.avdeling}
-                                    </p>
-                                    <p className="kontakt-detalj">
-                                        <i className="fa-solid fa-phone"></i>
-                                        <a href={`tel:${person.mobil}`}>
-                                            {person.mobil}
-                                        </a>
-                                    </p>
-                                    <p className="kontakt-detalj">
-                                        <i className="fa-solid fa-envelope"></i>
-                                        <a href={`mailto:${person.epost}`}>
-                                            {person.epost}
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                <h3>Østfold Husflidslag</h3>
+                <div className="cards-grid">
+                    <div className="card kontakt-card">
+                        <div className="card-content">
+                            <h3>{hovedkontakt.navn}</h3>
+                            <p className="kontakt-avdeling">Kontaktperson</p>
+                            <p className="kontakt-detalj">
+                                <i className="fa-solid fa-location-dot"></i>
+                                <span>{hovedkontakt.adresse[0]}<br/>{hovedkontakt.adresse[1]}</span>
+                            </p>
+                            <Telefon nummer={hovedkontakt.telefon}/>
+                            <Epost adresse={hovedkontakt.epost}/>
+                        </div>
                     </div>
-                )}
+                </div>
+
+                <h3>Styret</h3>
+                <div className="cards-grid">
+                    {styret.map((person) => (
+                        <div className="card kontakt-card" key={person.navn}>
+                            <div className="card-content">
+                                <h3>{person.navn}</h3>
+                                <p className="kontakt-avdeling">{person.roller.join(' · ')}</p>
+                                <Telefon nummer={person.telefon}/>
+                                <Epost adresse={person.epost}/>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <p className="kontakt-detalj">
+                    Kilde: <a href={KILDE_URL} target="_blank" rel="noreferrer">&nbsp;Østfold Husflidslag på husflid.no</a>
+                </p>
             </section>
         </main>
     );
