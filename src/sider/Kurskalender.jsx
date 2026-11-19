@@ -19,9 +19,9 @@ function Kurskalender({ handleSeKurs }) {
         },
         {
             id: 2,
-            title: 'Nissekurs, nålefilting',
+            title: 'Julenissen, vev',
             image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
-            tags: ['Annet', 'Kurs'],
+            tags: ['Vev', 'Kurs'],
             lokallag: 'Halden',
             kategori: 'Annet',
             type: 'Kurs',
