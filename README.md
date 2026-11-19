@@ -37,11 +37,11 @@ Nettsiden skal vær informerende og enkelt å navigere
 
 
 Teamet:
-Sayo - Frontend,
-Sander - Frontend,
 Hiba - Fullstack,
 Abdi - Backend,
-Liam - Backend
+Liam - Backend,
+Sander - Frontend,
+Sayotika - Frontend
 
 <img width="1600" height="760" alt="image" src="https://github.com/user-attachments/assets/d32330e9-d518-4337-ae66-2a296c03998c" />
 
