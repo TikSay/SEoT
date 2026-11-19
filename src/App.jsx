@@ -12,7 +12,6 @@ import Paamelding from './sider/Påmeldning.jsx';
 import KontaktOss from './Komponenter/Kontakt.jsx';
 import SisteNytt from './Komponenter/SisteNytt.jsx';
 import ShareButton from "./Komponenter/ShareButton.jsx";
-import Nyheter from "./sider/Nyheter.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -160,9 +159,6 @@ function App() {
             <KontaktOss setCurrentpage={setCurrentPage}/>
         )}
 
-        {currentPage === 'nyheter' && (
-            <Nyheter setCurrentPage={setCurrentPage}/>
-        )}
 
         <Footer setCurrentPage={setCurrentPage}/>
 

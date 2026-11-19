@@ -1,10 +1,12 @@
 import {useState} from 'react';
+import Kurskalender from "./Kurskalender.jsx";
 
 function Paamelding({valgtKurs, setCurrentPage, user}) {
     //Hadde vært kult hvis vi kunne ha den autofylt når man er logget inn//
     const [fornavn, setFornavn] = useState(user?.fornavn || '');
     const [etternavn, setEtternavn] = useState(user?.etternavn ||'');
     const [email, setEmail] = useState(user?.email ||'');
+    const [alder, setAlder] =useState(user?.alder || '');
     const [kursperiode, setKursperiode] = useState(valgtKurs || 'Eksempel kurs - 20/08-2026');
     const [isMedlem, setIsMedlem] = useState(true);
     const [medlemsnummer, setMedlemsnummer] = useState('');
@@ -37,18 +39,18 @@ function Paamelding({valgtKurs, setCurrentPage, user}) {
                 <h2>Påmelding</h2>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="input-group">
+                    <div className="input-group side-by-side">
                         <input type="text" placeholder="Fornavn" value={fornavn}
                                onChange={(e) => setFornavn(e.target.value)} required/>
-                    </div>
-
-                    <div className="input-group">
                         <input type="text" placeholder="Etternavn" value={etternavn}
                                onChange={(e) => setEtternavn(e.target.value)} required/>
                     </div>
 
-                    <div className="input-group">
-                        <input type="text" placeholder="E-post" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                    <div className="input-group side-by-side">
+                        <input type="text" placeholder="E-post" value={email} onChange={(e) => setEmail(e.target.value)}
+                               required/>
+                        <input type="number" placeholder="Alder" style={{width: 120, height:47}} value={alder}
+                               onChange={(e) => setAlder(e.target.value)} required/>
                     </div>
 
                     <div className="input-group">
@@ -63,32 +65,36 @@ function Paamelding({valgtKurs, setCurrentPage, user}) {
 
                     <div className="paamelding-options">
                         <label className="paamelding-options-item">
-                            <input type="radio" name="medlemsskap" checked={isMedlem} onChange={() => setIsMedlem(true)}/>
+                            <input type="radio" name="medlemsskap" checked={isMedlem}
+                                   onChange={() => setIsMedlem(true)}/>
                             Medlem (Kr pris for medlem,-)
                         </label>
 
                         {isMedlem && (
                             <div className="input-group">
-                                <input type="text" placeholder="Medlemsnummer" value={medlemsnummer} onChange={(e)=> setMedlemsnummer(e.target.value)} required={isMedlem}/>
+                                <input type="text" placeholder="Medlemsnummer" value={medlemsnummer}
+                                       onChange={(e) => setMedlemsnummer(e.target.value)} required={isMedlem}/>
                             </div>
                         )}
 
 
                         <label className="paamelding-options-item">
-                            <input type="radio" name="medlemsskap" checked={!isMedlem} onChange={()=> setIsMedlem(false)}/>
+                            <input type="radio" name="medlemsskap" checked={!isMedlem}
+                                   onChange={() => setIsMedlem(false)}/>
                             Pris (Kr pris for ikke medlem,-)
                         </label>
                     </div>
 
                     <div className="paamelding-terms">
                         <label className="paamelding-options-item">
-                            <input type="checkbox" checked={godtattBetingelser} onChange={(e)=> setGodtattBetingelser(e.target.checked)}/>
+                            <input type="checkbox" checked={godtattBetingelser}
+                                   onChange={(e) => setGodtattBetingelser(e.target.checked)}/>
                             Jeg har lest og godtar salgsbetingelsene
                         </label>
                     </div>
 
                     <div className="paamelding-submit-container">
-                        <button type="submit" className="btn-paamelding" >
+                        <button type="submit" className="btn-paamelding">
                             Meld på
                         </button>
                     </div>
