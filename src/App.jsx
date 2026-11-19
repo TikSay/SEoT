@@ -5,6 +5,10 @@ import Registrer from './sider/Registrer.jsx';
 import Profil from './sider/Profil.jsx';
 import GlemtPassord from './sider/GlemtPassord.jsx';
 import husflidLogo from './assets/husflidlog.jpg';
+import bunad from './assets/bunad.png';
+import sy from './assets/sy.png';
+import sew from './assets/sew.png';
+import vev from './assets/vev.png'
 import Footer from "./Komponenter/Footer.jsx";
 import Kurskalender from './sider/Kurskalender.jsx';
 import KursInfo from './sider/KursInfo.jsx';
@@ -32,9 +36,16 @@ function App() {
     setCurrentPage('paamelding');
   };
 
+  const bilderEtterId = {
+    1: bunad,
+    2: vev,
+    3: sy,
+    4: sew
+  };
+
   function apnePamelding(kursId) {
         setValgtKursId(kursId);
-        setCurrentPage('pamelding');
+        setCurrentPage('paamelding');
   }
 
   useEffect(() => {
@@ -115,27 +126,36 @@ function App() {
                 <div className="cards-grid">
                   {courses.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
 
-                  {courses.map(kurs => (
-                      <div className="card" key={kurs.id}>
-                        <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
-                        <div className="card-content">
-                          <h3>{kurs.tittel}</h3>
-                          <p>{kurs.beskrivelse}</p>
-                          <ul className="card-meta">
-                            <li><span><i className="fa-solid fa-calendar"></i></span> {new Date(kurs.dato).toLocaleDateString('nb-NO')}</li>
-                            <li><span><i className="fa-jelly fa-regular fa-clock"></i></span> {kurs.starttid.slice(0, 5)}</li>
-                            <li><span><i className="fa-sharp fa-solid fa-people-line"></i></span> {kurs.kapasitet} deltakere</li>
-                            <li><span><i className="fa-solid fa-tag"></i></span> {kurs.pris} kr</li>
-                            <li><span><i className="fa-notdog-duo fa-solid fa-star"></i></span>{kurs.nivaa}</li>
-                          </ul>
-                          <div className="card-footer">
-                            <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                            <ShareButton kurs={kurs} />
-                            <button className="btn-secondary" onClick={() => apnePamelding(kurs.id)}>Til Påmelding</button>
+                  {courses.slice(0, 4).map((kurs, index )=> {
+                    const bilde = bilderEtterId[Number(kurs.id)] || [bunad, vev, sy, sew][index % 4];
+                    return (
+                        <div className="card" key={kurs.id}>
+                          <div className="card-img" style={{
+                            backgroundImage: `url('${bilde}')`}}></div>
+                          <div className="card-content">
+                            <h3>{kurs.tittel}</h3>
+                            <p>{kurs.beskrivelse}</p>
+                            <ul className="card-meta">
+                              <li><span><i
+                                  className="fa-solid fa-calendar"></i></span> {new Date(kurs.dato).toLocaleDateString('nb-NO')}
+                              </li>
+                              <li><span><i
+                                  className="fa-jelly fa-regular fa-clock"></i></span> {kurs.starttid.slice(0, 5)}</li>
+                              <li><span><i
+                                  className="fa-sharp fa-solid fa-people-line"></i></span> {kurs.kapasitet} deltakere
+                              </li>
+                              <li><span><i className="fa-solid fa-tag"></i></span> {kurs.pris} kr</li>
+                              <li><span><i className="fa-notdog-duo fa-solid fa-star"></i></span>{kurs.nivaa}</li>
+                            </ul>
+                            <div className="card-footer">
+                              <ShareButton kurs={kurs}/>
+                              <button className="btn-secondary" onClick={() => apnePamelding(kurs.id)}>Til Påmelding
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
 

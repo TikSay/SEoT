@@ -20,13 +20,10 @@ import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinJackson;
-import jakarta.servlet.ServletOutputStream;
 import org.eclipse.jetty.ee10.servlet.SessionHandler;
 import org.eclipse.jetty.http.HttpCookie;
 
-import java.io.IO;
 import java.io.IOException;
-import java.lang.IO;
 import java.time.Clock;
 
 /**
@@ -38,7 +35,6 @@ import java.time.Clock;
 public class WebServer {
 
     private static final int PORT = 7070;
-    private static final ServletOutputStream IO = ;
 
 
     static void main() throws IOException {
@@ -61,7 +57,7 @@ public class WebServer {
             courseController = new CourseController(dbConfig.createCourseRegistry());
             enrollmentController = new EnrollmentController(new EnrollmentHandler(dbConfig.createEnrollmentRegistry()));
         } catch (IllegalStateException e) {
-            IO.println("Configuration error: " + e.getMessage());
+            System.out.println("Configuration error: " + e.getMessage());
             return;
         }
         LoginController controller = new LoginController(handler, sessionUser);
@@ -75,9 +71,9 @@ public class WebServer {
             registerUserRoutes(config, userController);
         }).start();
 
-        IO.println("Login backend running on http://localhost:" + PORT);
+        System.out.println("Login backend running on http://localhost:" + PORT);
         if (frontendOrigin == null || frontendOrigin.isBlank()) {
-            IO.println("CORS disabled: set FRONTEND_ORIGIN to allow a browser frontend.");
+            System.out.println("CORS disabled: set FRONTEND_ORIGIN to allow a browser frontend.");
         }
     }
 

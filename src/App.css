@@ -25,6 +25,12 @@ body {
   display: flex;
   flex-direction: column;
 }
+.card-meta {
+  list-style: none;
+  display: flex;
+  flex-direction:column;
+  gap: 0.5rem;
+}
 
 /*header*/
 header {
