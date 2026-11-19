@@ -117,22 +117,21 @@ function App() {
 
                   {courses.map(kurs => (
                       <div className="card" key={kurs.id}>
-                        <div className="card-img" style={{backgroundImage: "url('/images/sytreff.png')"}}></div>
+                        <div className="card-img" style={{ backgroundImage: "url('https://placehold.co/300x180')" }}></div>
                         <div className="card-content">
                           <h3>{kurs.tittel}</h3>
                           <p>{kurs.beskrivelse}</p>
                           <ul className="card-meta">
-                            <li>Dato: {new Date(kurs.dato).toLocaleDateString('nb-NO')}</li>
-                            <li>Tid: {kurs.starttid.slice(0, 5)}</li>
-                            <li>Maks {kurs.kapasitet} deltakere</li>
-                            <li>Pris: {kurs.pris} kr</li>
-                            <li>Nivå: {kurs.nivaa}</li>
+                            <li><span><i className="fa-solid fa-calendar"></i></span> {new Date(kurs.dato).toLocaleDateString('nb-NO')}</li>
+                            <li><span><i className="fa-jelly fa-regular fa-clock"></i></span> {kurs.starttid.slice(0, 5)}</li>
+                            <li><span><i className="fa-sharp fa-solid fa-people-line"></i></span> {kurs.kapasitet} deltakere</li>
+                            <li><span><i className="fa-solid fa-tag"></i></span> {kurs.pris} kr</li>
+                            <li><span><i className="fa-notdog-duo fa-solid fa-star"></i></span>{kurs.nivaa}</li>
                           </ul>
                           <div className="card-footer">
                             <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                            <ShareButton kurs={kurs}/>
-                            <button className="btn-secondary" onClick={() => apnePamelding(kurs.id)}>Til Påmelding
-                            </button>
+                            <ShareButton kurs={kurs} />
+                            <button className="btn-secondary" onClick={() => apnePamelding(kurs.id)}>Til Påmelding</button>
                           </div>
                         </div>
                       </div>
