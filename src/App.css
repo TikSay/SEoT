@@ -334,28 +334,6 @@ footer::before {
   text-decoration: underline;
 }
 
-/**KURSKORT (S-012, dynamisk kursvisning)**/
-.card-meta {
-  list-style: none;
-  padding: 0;
-  margin: 12px 0 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 16px;
-  font-size: 0.9rem;
-}
-
-.card-meta li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-meta i {
-  width: 14px;
-  color: #c0284f;
-}
-
 /*PÅMELDINGSSIDE**/
 .paamelding-box {
   background-color: var(--primary-red);
