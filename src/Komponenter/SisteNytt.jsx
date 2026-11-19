@@ -1,3 +1,5 @@
+
+
 function SisteNytt({ setCurrentPage }) {
     const nyhet = {
         id: 1,
@@ -21,13 +23,6 @@ function SisteNytt({ setCurrentPage }) {
             <h3>{nyhet.tittel}</h3>
 
             <p>{nyhet.beskrivelse}</p>
-
-            <button
-                className="btn-secondary"
-                onClick={() => setCurrentPage ("nyheter")}
-            >
-                Les Mer 
-            </button>
         </div>
       </article>
     )

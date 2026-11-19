@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Login from './sider/Login.jsx';
 import Registrer from './sider/Registrer.jsx';
 import Profil from './sider/Profil.jsx';
@@ -11,13 +11,15 @@ import KursInfo from './sider/KursInfo.jsx';
 import Paamelding from './sider/Påmeldning.jsx';
 import KontaktOss from './Komponenter/Kontakt.jsx';
 import SisteNytt from './Komponenter/SisteNytt.jsx';
-import Share from './Komponenter/ShareButton.jsx';
 import ShareButton from "./Komponenter/ShareButton.jsx";
+import Nyheter from "./sider/Nyheter.jsx";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [valgtKursId, setValgtKursId] = useState(null);
   const [valgtKurs, setValgtKurs] = useState('');
 
   const handleSeKurs = (kursObjekt) => {
@@ -29,6 +31,18 @@ function App() {
     setValgtKurs({title: kursTittel});
     setCurrentPage('paamelding');
   };
+
+  function apnePamelding(kursId) {
+    setValgtKursId(kursId);
+    setCurrentPage('pamelding');
+  }
+
+  useEffect(() => {
+    fetch('/api/courses')
+        .then(res => res.json())
+        .then(data => { if (data.success) setCourses(data.courses); })
+        .catch(() => setCourses([]));
+  }, []);
 
   return (
       <div className="container">
@@ -81,98 +95,78 @@ function App() {
             <button className="main-btn" onClick={() => setCurrentPage('registrer')}>BLI MEDLEM</button>
           </section>
 
-          <section className="right-column">
-            <h2>Kommende Kurs- og Aktiviteter</h2>
+              <section className="right-column">
+                <h2>Kommende Kurs- og Aktiviteter</h2>
 
+                <div className="cards-grid">
+                  {courses.length === 0 && <p>Ingen kommende kurs akkurat nå.</p>}
 
-
-            <div className="cards-grid">
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/sytreff.png')" }}></div>
-                <div className="card-content">
-                  <h3>Sytreff i Råde</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={()=> handleVelgKurs('Sytreff i Råde')}>Til Påmelding</button>
-                  </div>
-              </div>
-            </div>
-
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/fletting.png')" }}></div>
-                <div className="card-content">
-                  <h3>Meksikansk fletting</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Meksikansk fletting')}>Til Påmelding</button>
-                  </div>
+                  {courses.map(kurs => (
+                      <div className="card" key={kurs.id}>
+                        <div className="card-img" style={{backgroundImage: "url('/images/sytreff.png')"}}></div>
+                        <div className="card-img" style={{backgroundImage: "url('/images/fletting.png')"}}></div>
+                        <div className="card-img" style={{backgroundImage: "url('/images/brodering.png')"}}></div>
+                        <div className="card-img" style={{backgroundImage: "url('/images/bunad.png')"}}></div>
+                        <div className="card-content">
+                          <h3>{kurs.tittel}</h3>
+                          <p>{kurs.beskrivelse}</p>
+                          <ul className="card-meta">
+                            <li>Dato: {new Date(kurs.dato).toLocaleDateString('nb-NO')}</li>
+                            <li>Tid: {kurs.starttid.slice(0, 5)}</li>
+                            <li>Maks {kurs.kapasitet} deltakere</li>
+                            <li>Pris: {kurs.pris} kr</li>
+                            <li>Nivå: {kurs.nivaa}</li>
+                          </ul>
+                          <div className="card-footer">
+                            <div className="info-icon"><i className="fa-solid fa-info"></i></div>
+                            <ShareButton kurs={kurs}/>
+                            <button className="btn-secondary" onClick={() => apnePamelding(kurs.id)}>Til Påmelding
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                  ))}
                 </div>
-              </div>
 
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/brodering.png')" }}></div>
-                <div className="card-content">
-                  <h3>Lær å brodere, plattsøm og tellesøm</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Lær å brodere, plattsøm og tellesøm')}>Til Påmelding</button>
-                  </div>
-                </div>
-              </div>
 
-              <div className="card">
-                <div className="card-img" style={{ backgroundImage: "url('/images/bunad.png')" }}></div>
-                <div className="card-content">
-                  <h3>Bunadkurs</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua</p>
-                  <div className="card-footer">
-                    <div className="info-icon"><i className="fa-solid fa-info"></i></div>
-                    <button className="btn-secondary" onClick={() => handleVelgKurs('Bunadkurs')}>Til Påmelding</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-      )}
+              </section>
+            </main>
+        )}
         {currentPage === 'login' && (
-            <Login setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
+            <Login setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} setUser={setUser}/>
         )}
         {currentPage === 'registrer' && (
-            <Registrer setCurrentPage={setCurrentPage} />
+            <Registrer setCurrentPage={setCurrentPage}/>
         )}
         {currentPage === 'glemt-passord' && (
-            <GlemtPassord setCurrentPage={setCurrentPage} />
+            <GlemtPassord setCurrentPage={setCurrentPage}/>
         )}
         {currentPage === 'profil' && (
-            <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser} />
+            <Profil setCurrentPage={setCurrentPage} setIsLoggedIn={setIsLoggedIn} user={user} setUser={setUser}/>
         )}
 
         {currentPage === 'kurskalender' && (
             <Kurskalender handleSeKurs={handleSeKurs}/>
         )}
         {currentPage === 'kursinfo' && (
-            <KursInfo kurs={valgtKurs} setCurrentPage={setCurrentPage} />
+            <KursInfo kurs={valgtKurs} setCurrentPage={setCurrentPage}/>
         )}
 
         {currentPage === 'paamelding' && (
-            <Paamelding valgtKurs={valgtKurs?.title || valgtKurs} setCurrentPage={setCurrentPage} user={user} />
+            <Paamelding valgtKurs={valgtKurs?.title || valgtKurs} setCurrentPage={setCurrentPage} user={user}/>
         )}
 
         {currentPage === 'kontakt' && (
-            <KontaktOss setCurrentpage={setCurrentPage} />
+            <KontaktOss setCurrentpage={setCurrentPage}/>
         )}
 
-       <Footer setCurrentPage={setCurrentPage} />
+        {currentPage === 'nyheter' && (
+            <Nyheter setCurrentPage={setCurrentPage}/>
+        )}
 
-          </div>
+        <Footer setCurrentPage={setCurrentPage}/>
+
+      </div>
   );
 }
 
