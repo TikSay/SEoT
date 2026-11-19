@@ -7,15 +7,20 @@ function Profil({ setCurrentPage, setIsLoggedIn, user, setUser }) {
     const [email, setEmail] = useState(user ? user.email : '');
     const [lokallag, setLokallag] = useState(user ? user.lokallag : '');
 
+    const [lagrer, setLagrer] = useState(false);
+    const [lagreFeil, setLagreFeil] = useState('');
+
     const [loggerUt, setLoggerUt] = useState(false);
     const [logoutFeil, setLogoutFeil] = useState('');
 
-    // Logger ut på serveren først, så React bare viser "utlogget" når sesjonen faktisk er avsluttet
     const handleLogout = async () => {
         setLoggerUt(true);
         setLogoutFeil('');
         try {
-            const response = await fetch('/api/logout', { method: 'POST' });
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
             const result = await response.json();
             if (!response.ok || !result.success) {
                 throw new Error(result.message);
@@ -30,17 +35,39 @@ function Profil({ setCurrentPage, setIsLoggedIn, user, setUser }) {
         }
     };
 
-    const handleSave = (e) => {
+    const handleSave = async (e) => {
         e.preventDefault();
+        setLagrer(true);
+        setLagreFeil('');
 
-        setUser({
-            ...user,
-            fornavn,
-            etternavn,
-            email,
-            lokallag,
-        });
-        setRedigerer(false);
+        try {
+            const response = await fetch('/api/user/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    fornavn,
+                    etternavn,
+                    email,
+                    lokallag,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Klarte ikke å lagre endringer');
+            }
+
+            setUser(result.user);
+            setRedigerer(false);
+        } catch (err) {
+            setLagreFeil(err.message || 'Noe gikk galt under lagring. Prøv igjen.');
+        } finally {
+            setLagrer(false);
+        }
     };
 
     if (!user) return null;
@@ -52,75 +79,80 @@ function Profil({ setCurrentPage, setIsLoggedIn, user, setUser }) {
                 {redigerer ? (
                     <form onSubmit={handleSave}>
                         <div className="input-group">
-                        <label htmlFor="fornavn">Fornavn:</label>
-                        <input
-                            type="text"
-                            id="fornavn"
-                            value={fornavn}
-                            onChange={(e) => setFornavn(e.target.value)}
-                            required
-                        />
-                    </div>
-                    
-                    <div className="input-group">
-                        <label htmlFor="etternavn">Etternavn</label>
-                        <input
-                        type="text"
-                        id="etternavn"
-                        value={etternavn}
-                        onChange={(e) => setEtternavn(e.target.value)}
-                        required
-                    />
-                </div>
+                            <label htmlFor="fornavn">Fornavn:</label>
+                            <input
+                                type="text"
+                                id="fornavn"
+                                value={fornavn}
+                                onChange={(e) => setFornavn(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <div className="input-group">
-                        <label htmlFor="email">E-postadresse</label>
-                        <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
+                        <div className="input-group">
+                            <label htmlFor="etternavn">Etternavn</label>
+                            <input
+                                type="text"
+                                id="etternavn"
+                                value={etternavn}
+                                onChange={(e) => setEtternavn(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <div className  ="input-group">
-                        <label htmlFor="lokallag">Lokallag:</label>
-                        <select
-                            id="lokallag"
-                            className="by-options"
-                            value={lokallag}
-                            onChange={(e) => setLokallag(e.target.value)}
-                        >
-                            <option value="fredrikstad husflidslag">Fredrikstad</option>
-                            <option value="halden husflidslag">Halden</option>
-                            <option value="hobøl husflidslag">Hobøl</option>
-                            <option value="indre østfold husflidslag">Indre Østfold</option>
-                            <option value="moss husflidslag">Moss</option>
-                            <option value="rygge husflidslag">Rygge</option>
-                            <option value="råde husflidslag">Råde</option>
-                            <option value="sarpsborg husflidslag">Sarpsborg</option>
-                        </select>
-                    </div>
-                        <button type="submit" className="main-btn Login-btn">
-                            LAGRE ENDRINGER
+                        <div className="input-group">
+                            <label htmlFor="email">E-postadresse</label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div className="input-group">
+                            <label htmlFor="lokallag">Lokallag:</label>
+                            <select
+                                id="lokallag"
+                                className="by-options"
+                                value={lokallag}
+                                onChange={(e) => setLokallag(e.target.value)}
+                            >
+                                <option value="fredrikstad husflidslag">Fredrikstad</option>
+                                <option value="halden husflidslag">Halden</option>
+                                <option value="hobøl husflidslag">Hobøl</option>
+                                <option value="indre østfold husflidslag">Indre Østfold</option>
+                                <option value="moss husflidslag">Moss</option>
+                                <option value="rygge husflidslag">Rygge</option>
+                                <option value="råde husflidslag">Råde</option>
+                                <option value="sarpsborg husflidslag">Sarpsborg</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" className="main-btn Login-btn" disabled={lagrer}>
+                            {lagrer ? 'LAGRER...' : 'LAGRE ENDRINGER'}
                         </button>
+
+                        {lagreFeil && (
+                            <p role="alert" style={{ color: '#b00020', marginTop: '10px' }}>
+                                {lagreFeil}
+                            </p>
+                        )}
                     </form>
                 ) : (
                     <div className="profil-info">
                         <p><strong>Navn:</strong> {user.fornavn} {user.etternavn}</p>
                         <p><strong>E-post:</strong> {user.email}</p>
                         <p><strong>Lokallag:</strong> {user.lokallag}</p>
-                    
-                
 
-                    <button
-                        type="button"
-                        className="main-btn login-btn"
-                        onClick={() => setRedigerer(true)}
-                    >
-                        REDIGER PROFIL
-                    </button>
+                        <button
+                            type="button"
+                            className="main-btn login-btn"
+                            onClick={() => setRedigerer(true)}
+                        >
+                            REDIGER PROFIL
+                        </button>
                     </div>
                 )}
 

@@ -42,12 +42,14 @@ public class WebServer {
         ForgotPasswordHandler forgotPasswordHandler;
         CourseController courseController;
         EnrollmentController enrollmentController;
+        UserController userController;
         try {
             DbConfig dbConfig = DbConfig.load();
             DataRegistry registry = dbConfig.createRegistry();
             handler = new LoginHandler(registry);
             sessionUser = new SessionUser(registry);
             registerHandler = new RegisterHandler(registry);
+            userController = new UserController(registry, sessionUser);
             // Sprint 1: reset-koden skrives i konsollen. Her bytter vi til ekte e-post senere.
             forgotPasswordHandler = new ForgotPasswordHandler(registry, new ConsoleResetCodeSender(), Clock.systemUTC());
             courseController = new CourseController(dbConfig.createCourseRegistry());
@@ -64,6 +66,7 @@ public class WebServer {
         Javalin.create(config -> {
             configure(config, controller, registerController, forgotPasswordController, frontendOrigin);
             registerCourseRoutes(config, courseController, enrollmentController);
+            registerUserRoutes(config, userController);
         }).start();
 
         IO.println("Login backend running on http://localhost:" + PORT);
@@ -120,6 +123,14 @@ public class WebServer {
                                      EnrollmentController enrollmentController) {
         config.routes.get("/api/courses", courseController::getCourses);
         config.routes.post("/api/enrollments", enrollmentController::enroll);
+    }
+
+    /**
+     * S-017: redigering av profil. Egen metode ved siden av configure(), så de eksisterende testene
+     * for innlogging, validering og feilhåndtering ikke trenger en UserController.
+     */
+    static void registerUserRoutes(JavalinConfig config, UserController userController) {
+        config.routes.put("/api/user/update", userController::updateProfile);
     }
 
     /**
