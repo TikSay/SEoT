@@ -24,7 +24,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [sjekkerSesjon, setSjekkerSesjon] = useState(true);
-  const [valgtKurs, setValgtKurs] = useState('');
   // S-012 (Hiba): kurs fra GET /api/courses
   const [courses, setCourses] = useState([]);
   const [valgtKursId, setValgtKursId] = useState(null);
@@ -32,11 +31,6 @@ function App() {
   const [kursFeil, setKursFeil] = useState(false);
   // Kurs med bilde, til forsiden. Hele listen (courses) brukes fortsatt av påmeldingen.
   const forsideKurs = courses.filter(kurs => kursBilder[kurs.tittel]);
-
-  const  handleVelgKurs = (kursTittel) => {
-    setValgtKurs(kursTittel);
-    setCurrentPage('paamelding');
-  };
 
   // S-013 (Hiba): påmelding fra de dynamiske kurskortene bruker kurs-ID
   function apnePamelding(kursId) {
@@ -170,12 +164,11 @@ function App() {
         )}
 
         {currentPage === 'kurskalender' && (
-            <Kurskalender handleVelgKurs={handleVelgKurs} />
+            // S-011/S-019: kurskalenderen bruker samme kurs fra GET /api/courses, og sender kurs-ID videre til påmeldingen
+            <Kurskalender courses={courses} lasterKurs={lasterKurs} kursFeil={kursFeil} kursBilder={kursBilder}
+                          handleVelgKurs={apnePamelding} />
         )}
-        {currentPage === 'paamelding' && (
-            <Paamelding valgtKurs={valgtKurs} setCurrentPage={setCurrentPage} user={user} />
-        )}
-        {/* S-013 (Hiba): påmelding fra de dynamiske kurskortene. valgtKurs og user sendes også, så Påmeldning.jsx viser valgt kurs og innlogget bruker. */}
+        {/* S-013 (Hiba): påmelding fra kurskortene på forsiden og i kurskalenderen. valgtKurs og user sendes også, så Påmeldning.jsx viser valgt kurs og innlogget bruker. */}
         {currentPage === 'pamelding' && (
             <Paamelding courses={courses} valgtKursId={valgtKursId} setCurrentPage={setCurrentPage}
                         valgtKurs={courses.find(k => k.id === valgtKursId)?.tittel} user={user} />
