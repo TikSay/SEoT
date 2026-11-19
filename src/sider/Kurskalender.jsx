@@ -109,7 +109,6 @@ function Kurskalender({ handleSeKurs }) {
     });
 
 
-
     return(
         <main className="kurs-grid">
             <div className="top-action-bar">
@@ -154,7 +153,7 @@ function Kurskalender({ handleSeKurs }) {
                 <h1>{filtrerteKurs.length} resultater</h1>
             </div>
 
-            <div className="results-header">
+            <div className="cards-grid2">
                 {filtrerteKurs.length > 0 ? (
                     filtrerteKurs.map((kurs) => (
                         <KursCard

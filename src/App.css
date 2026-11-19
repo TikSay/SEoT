@@ -486,7 +486,7 @@ h2 {
 .cards-grid2 {
   display: grid;
   flex-direction: row;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   width: 100%;
 }
@@ -524,15 +524,12 @@ h2 {
 
 /* Oppdatert KursKort (Minimalistisk) */
 .course-card {
-  width: 100%;
+  width: 400px;
   background: #fff;
   border: 1px solid #ebebeb;
-  display: flex;
-  flex-direction: column;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  height: 200px;
-  flex-shrink: 0;
+  height: 250px;
   box-sizing: border-box;
 }
 .course-card:hover {
