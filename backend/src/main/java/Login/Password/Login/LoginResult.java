@@ -1,4 +1,6 @@
-package Login;
+package Login.Password.Login;
+
+import Login.ConsoleResetCodeSender.User;
 
 public class LoginResult {
     private final boolean success;

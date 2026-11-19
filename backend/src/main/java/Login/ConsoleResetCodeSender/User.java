@@ -1,4 +1,4 @@
-package Login;
+package Login.ConsoleResetCodeSender;
 
 public class User {
     private final int id;

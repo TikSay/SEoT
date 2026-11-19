@@ -1,5 +1,8 @@
 package Login;
 
+import Login.Password.Login.LoginHandler;
+import Login.Password.Login.LoginResult;
+
 public class Main {
     static void main() {
         LoginHandler handler;

@@ -1,5 +1,14 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.ConsoleResetCodeSender;
+import Login.ConsoleResetCodeSender.User;
+import Login.Password.ForgotPassword.ForgotPasswordController;
+import Login.Password.ForgotPassword.ForgotPasswordHandler;
+import Login.Password.Login.LoginController;
+import Login.Password.Login.LoginHandler;
+import Login.Password.Register.RegisterController;
+import Login.Password.Register.RegisterHandler;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;

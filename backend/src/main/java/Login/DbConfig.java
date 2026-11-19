@@ -1,5 +1,9 @@
 package Login;
 
+import Login.Course.DatabaseCourseRegistry;
+import Login.Course.DatabaseRegistry;
+import Login.Enrollment.DatabaseEnrollmentRegistry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -55,6 +59,16 @@ public class DbConfig {
 
     public DatabaseRegistry createRegistry() {
         return new DatabaseRegistry(url, user, password);
+    }
+
+    /** Kurs til GET /api/courses (S-012). */
+    public DatabaseCourseRegistry createCourseRegistry() {
+        return new DatabaseCourseRegistry(url, user, password);
+    }
+
+    /** Påmeldinger til POST /api/enrollments (S-013). */
+    public DatabaseEnrollmentRegistry createEnrollmentRegistry() {
+        return new DatabaseEnrollmentRegistry(url, user, password);
     }
 
     public String getUrl() {

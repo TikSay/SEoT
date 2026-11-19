@@ -1,4 +1,8 @@
-package Login;
+package Login.Course;
+
+import Login.ConsoleResetCodeSender.UserCredentials;
+import Login.ConsoleResetCodeSender.User;
+import Login.Password.ResetPassword.PasswordReset;
 
 import java.time.Instant;
 
@@ -10,6 +14,8 @@ public interface DataRegistry {
     User findUserById(int id);
 
     void addUser(String fornavn, String etternavn, String email, String passwordHash, String lokallag);
+
+    void updateUser(int userId, String fornavn, String etternavn, String email, String lokallag);
 
     /** Lagrer en ny reset-kode (allerede hashet) og nullstiller antall forsøk. */
     void saveResetCode(int userId, String codeHash, Instant expiresAt);

@@ -1,5 +1,12 @@
 package Login;
 
+import Login.Password.ForgotPassword.ForgotPasswordController;
+import Login.Password.ForgotPassword.ForgotPasswordHandler;
+import Login.Password.Login.LoginController;
+import Login.Password.Login.LoginHandler;
+import Login.Password.Register.RegisterController;
+import Login.Password.Register.RegisterHandler;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import org.junit.jupiter.api.AfterEach;
