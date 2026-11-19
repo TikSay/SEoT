@@ -2,6 +2,7 @@ import KursCard from '../Komponenter/KursCard.jsx'
 import {useState} from 'react';
 
 function Kurskalender({ handleSeKurs }) {
+
     //dummy-data! Dette er en liste med objekter som fungerer
     // Slett når du får inn APIkall//
     const [kursListe] = useState([
@@ -34,7 +35,7 @@ function Kurskalender({ handleSeKurs }) {
             title: 'Nissekurs, nålefilting',
             image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
             tags: ['Annet', 'Kurs'],
-            lokallag: 'Halden',
+            lokallag: 'Moss',
             kategori: 'Annet',
             type: 'Kurs',
             dato: '15. november 2026, kl. 18:00',
@@ -59,7 +60,7 @@ function Kurskalender({ handleSeKurs }) {
             image: 'https://placehold.co/400x250/f4f4f4/666?text=Nissekurs',
             tags: ['Annet', 'Kurs'],
             lokallag: 'Halden',
-            kategori: 'Annet',
+            kategori: 'Vev',
             type: 'Kurs',
             dato: '15. november 2026, kl. 18:00',
             pris: '450 kr (Medlem) / 600 kr (Ikke-medlem)',
@@ -84,11 +85,25 @@ function Kurskalender({ handleSeKurs }) {
     const [valgtKategori, setValgtKategori] = useState('Alle');
     const [valgtType, setValgtType] = useState('Alle');
 
-    const filtrerteKurs = kursListe.filter((kurs) => {kurs.title.toLowerCase().includes(searchQuery.toLowerCase());
-        const matcherSok = kurs.title.toLowerCase().includes(searchQuery.toLowerCase());
-        const matcherLag = valgtLag === 'Alle' || kurs.lokallag === valgtLag;
-        const matcherKategori = valgtKategori === 'Alle' || kurs.kategori === valgtKategori;
-        const matcherType = valgtType === 'Alle' || kurs.type === valgtType;
+    const filtrerteKurs = kursListe.filter((kurs) => {
+        const matcherSok = !searchQuery ||
+            (kurs.title && kurs.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        const matcherLag = !valgtLag || valgtLag.toLowerCase() === 'alle' ||
+            (kurs.lokallag && kurs.lokallag.toLowerCase() === valgtLag.toLowerCase());
+
+        const visAlleKategorier = !valgtKategori ||
+            valgtKategori === '' ||
+            valgtKategori.toLowerCase() === 'alle' ||
+            valgtKategori.toLowerCase().includes('alle') ||
+            valgtKategori.toLowerCase().includes('tema');
+
+        const matcherKategori = visAlleKategorier ||
+            (kurs.kategori && kurs.kategori.toLowerCase() === valgtKategori.toLowerCase()) ||
+            (kurs.tags && Array.isArray(kurs.tags) && kurs.tags.some(tag => tag.toLowerCase() === valgtKategori.toLowerCase()));
+
+        const matcherType = !valgtType || valgtType.toLowerCase() === 'alle' ||
+            (kurs.type && kurs.type.toLowerCase() === valgtType.toLowerCase());
 
         return matcherSok && matcherLag && matcherKategori && matcherType;
     });
@@ -103,24 +118,24 @@ function Kurskalender({ handleSeKurs }) {
                 </button>
             </div>
             <div className="filter-container">
-                <select className="filter-select">
-                    <option>Husflidslag (Alle)</option>
-                    <option>Halden</option>
-                    <option>Moss</option>
-                    <option>Fredrikstad</option>
-                    <option>Råde</option>
+                <select className="filter-select" value={valgtLag} onChange={(e) => setValgtLag(e.target.value)}>
+                    <option value="">Husflidslag (Alle)</option>
+                    <option value="Halden">Halden</option>
+                    <option value="Moss">Moss</option>
+                    <option value="Fredrikstad">Fredrikstad</option>
+                    <option value="Råde">Råde</option>
                 </select>
-                <select className="filter-select">
-                    <option>Tema/kategori (Alle)</option>
-                    <option>Vev</option>
-                    <option>Trearbeid</option>
-                    <option>Søm</option>
-                    <option>Annet</option>
+                <select className="filter-select" value={valgtKategori} onChange={(e) => setValgtKategori(e.target.value)}>
+                    <option value="">Tema/kategori (Alle)</option>
+                    <option value="Vev">Vev</option>
+                    <option value="Trearneid">Trearbeid</option>
+                    <option value="Søm">Søm</option>
+                    <option value="Annet">Annet</option>
                 </select>
-                <select className="filter-select">
-                    <option>Arrangementstype (Alle)</option>
-                    <option>Kurs</option>
-                    <option>Treff</option>
+                <select className="filter-select" value={valgtType} onChange={(e) => setValgtType(e.target.value)}>
+                    <option value="">Arrangementstype (Alle)</option>
+                    <option value="Kurs">Kurs</option>
+                    <option value="Treff">Treff</option>
                 </select>
 
                 <div className="filter-search-container">
