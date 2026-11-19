@@ -17,7 +17,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-    const [sjekkerSesjon, setSjekkerSesjon] = useState(true);
+  const [sjekkerSesjon, setSjekkerSesjon] = useState(true);
   const [courses, setCourses] = useState([]);
   const [valgtKursId, setValgtKursId] = useState(null);
   const [valgtKurs, setValgtKurs] = useState('');
