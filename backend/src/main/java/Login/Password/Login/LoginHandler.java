@@ -1,4 +1,8 @@
-package Login;
+package Login.Password.Login;
+
+import Login.ConsoleResetCodeSender.UserCredentials;
+import Login.Course.DataRegistry;
+import Login.InputValidator;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -17,6 +21,11 @@ public class LoginHandler {
         }
         if (password == null || password.isBlank()) {
             return new LoginResult(false, "Password is required.");
+        }
+        // S-006: urimelig lange verdier avvises uten databaseoppslag, med samme melding som feil passord.
+        // Ingen krav til format eller minstelengde her, så eksisterende brukere fortsatt kan logge inn.
+        if (!InputValidator.isWithinLoginLimits(email, password)) {
+            return new LoginResult(false, "Invalid email or password.");
         }
 
         // 2 & 3. Finn brukeren på e-post og hent den lagrede hashen

@@ -1,4 +1,7 @@
-package Login;
+package Login.Password.Register;
+
+import Login.Course.DataRegistry;
+import Login.InputValidator;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -7,10 +10,9 @@ import java.util.Set;
 public class RegisterHandler {
 
     private static final int MAX_NAME_LENGTH = 50;       // samme som users.fornavn / users.etternavn VARCHAR(50)
-    private static final int MAX_EMAIL_LENGTH = 100;     // samme som users.email VARCHAR(100)
 
-    // Må stemme med valgene i «By adresse»-menyen i Registrer.jsx
-    private static final Set<String> LOKALLAG = Set.of(
+    // Må stemme med valgene i «By adresse»-menyen i Registrer.jsx og Profil.jsx. Brukes også av UserController (S-017).
+    public static final Set<String> LOKALLAG = Set.of(
             "fredrikstad husflidslag", "halden husflidslag", "hobøl husflidslag",
             "indre østfold husflidslag", "moss husflidslag", "rygge husflidslag",
             "råde husflidslag", "sarpsborg husflidslag");
@@ -47,9 +49,8 @@ public class RegisterHandler {
             throw new IllegalArgumentException("Last name cannot be longer than 50 characters.");
         }
 
-        if (email.trim().length() > MAX_EMAIL_LENGTH) {
-            throw new IllegalArgumentException("Email cannot be longer than 100 characters.");
-        }
+        InputValidator.requireValidEmail(email);
+        InputValidator.requireValidNewPassword(password, "Password");
 
         if (lokallag == null || !LOKALLAG.contains(lokallag)) {
             throw new IllegalArgumentException("Please choose a valid local chapter.");

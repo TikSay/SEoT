@@ -1,4 +1,7 @@
-package Login;
+package Login.Password.ForgotPassword;
+
+import Login.Password.Login.LoginResult;
+import Login.Password.ResetPassword.ResetPasswordRequest;
 
 import io.javalin.http.Context;
 

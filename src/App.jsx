@@ -17,6 +17,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+    const [sjekkerSesjon, setSjekkerSesjon] = useState(true);
   const [courses, setCourses] = useState([]);
   const [valgtKursId, setValgtKursId] = useState(null);
   const [valgtKurs, setValgtKurs] = useState('');
@@ -32,15 +33,29 @@ function App() {
   };
 
   function apnePamelding(kursId) {
-    setValgtKursId(kursId);
-    setCurrentPage('pamelding');
+        setValgtKursId(kursId);
+        setCurrentPage('pamelding');
   }
 
   useEffect(() => {
-    fetch('/api/courses')
-        .then(res => res.json())
-        .then(data => { if (data.success) setCourses(data.courses); })
-        .catch(() => setCourses([]));
+        fetch('/api/courses')
+            .then(res => res.json())
+            .then(data => { if (data.success) setCourses(data.courses); })
+            .catch(() => setCourses([]));
+    }, []);
+
+  // Spør backend om brukeren fortsatt er innlogget, så innloggingen huskes etter refresh
+  useEffect(() => {
+    fetch('/api/me')
+        .then(res => res.ok ? res.json() : null)
+        .then(result => {
+          if (result?.success) {
+            setUser(result.user);
+            setIsLoggedIn(true);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setSjekkerSesjon(false));
   }, []);
 
   return (
@@ -73,9 +88,9 @@ function App() {
             <div className="icon-item">
               <span><i className="fa-solid fa-cart-shopping"></i></span>NETTBUTIKK
             </div>
-            <div className="icon-item" onClick={() => setCurrentPage(isLoggedIn ? 'profil' : 'login')}>
+            <div className="icon-item" onClick={() => !sjekkerSesjon && setCurrentPage(isLoggedIn ? 'profil' : 'login')}>
               <span><i className="fa-solid fa-user"></i></span>
-              {isLoggedIn ? 'MIN SIDE' : 'LOGG INN'}
+              {sjekkerSesjon ? '...' : isLoggedIn ? 'MIN SIDE' : 'LOGG INN'}
             </div>
           </nav>
         </header>

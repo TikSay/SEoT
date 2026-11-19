@@ -1,5 +1,8 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.User;
+import Login.Course.DataRegistry;
+
 import io.javalin.http.Context;
 import jakarta.servlet.http.HttpSession;
 

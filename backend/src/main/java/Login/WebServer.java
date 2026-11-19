@@ -1,8 +1,25 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.ConsoleResetCodeSender;
+import Login.Course.CourseController;
+import Login.Course.DataRegistry;
+import Login.Enrollment.EnrollmentController;
+import Login.Enrollment.EnrollmentHandler;
+import Login.Password.ForgotPassword.ForgotPasswordController;
+import Login.Password.ForgotPassword.ForgotPasswordHandler;
+import Login.Password.Login.LoginController;
+import Login.Password.Login.LoginHandler;
+import Login.Password.Login.LoginResult;
+import Login.Password.Register.RegisterController;
+import Login.Password.Register.RegisterHandler;
+
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
+import com.fasterxml.jackson.databind.type.LogicalType;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.staticfiles.Location;
+import io.javalin.json.JavalinJackson;
 import org.eclipse.jetty.ee10.servlet.SessionHandler;
 import org.eclipse.jetty.http.HttpCookie;
 
@@ -23,13 +40,20 @@ public class WebServer {
         SessionUser sessionUser;
         RegisterHandler registerHandler;
         ForgotPasswordHandler forgotPasswordHandler;
+        CourseController courseController;
+        EnrollmentController enrollmentController;
+        UserController userController;
         try {
-            DataRegistry registry = DbConfig.load().createRegistry();
+            DbConfig dbConfig = DbConfig.load();
+            DataRegistry registry = dbConfig.createRegistry();
             handler = new LoginHandler(registry);
             sessionUser = new SessionUser(registry);
             registerHandler = new RegisterHandler(registry);
+            userController = new UserController(registry, sessionUser);
             // Sprint 1: reset-koden skrives i konsollen. Her bytter vi til ekte e-post senere.
             forgotPasswordHandler = new ForgotPasswordHandler(registry, new ConsoleResetCodeSender(), Clock.systemUTC());
+            courseController = new CourseController(dbConfig.createCourseRegistry());
+            enrollmentController = new EnrollmentController(new EnrollmentHandler(dbConfig.createEnrollmentRegistry()));
         } catch (IllegalStateException e) {
             IO.println("Configuration error: " + e.getMessage());
             return;
@@ -39,8 +63,11 @@ public class WebServer {
         ForgotPasswordController forgotPasswordController = new ForgotPasswordController(forgotPasswordHandler);
         String frontendOrigin = System.getenv("FRONTEND_ORIGIN");
 
-        Javalin.create(config -> configure(config, controller, registerController,
-                forgotPasswordController, frontendOrigin)).start();
+        Javalin.create(config -> {
+            configure(config, controller, registerController, forgotPasswordController, frontendOrigin);
+            registerCourseRoutes(config, courseController, enrollmentController);
+            registerUserRoutes(config, userController);
+        }).start();
 
         IO.println("Login backend running on http://localhost:" + PORT);
         if (frontendOrigin == null || frontendOrigin.isBlank()) {
@@ -53,6 +80,7 @@ public class WebServer {
                           RegisterController registerController,
                           ForgotPasswordController forgotPasswordController, String frontendOrigin) {
         config.jetty.port = PORT;
+        config.jsonMapper(createJsonMapper());
         config.staticFiles.add(staticFiles -> {
             staticFiles.hostedPath = "/";
             staticFiles.directory = "/public";
@@ -71,6 +99,50 @@ public class WebServer {
         config.routes.post("/login", controller::loginForm);
         config.routes.get("/account", controller::account);
         config.routes.post("/logout", controller::logout);
+
+        // S-007: sikkerhetsnett for feil som ingen controller fanger. Detaljene logges, brukeren får en generell melding.
+        config.routes.exception(Exception.class, (e, ctx) -> {
+            System.err.println("Unexpected error on " + ctx.method() + " " + ctx.path() + ": " + e);
+            ctx.status(500).json(new LoginResult(false, "Something went wrong. Please try again later."));
+        });
+        // S-007: ukjente /api-ruter svarer med JSON, så React alltid kan lese svaret med response.json()
+        // Javalin kjører denne for alle 404-svar. Traff forespørselen en rute (f.eks. "Course not found." fra påmeldingen),
+        // har controlleren allerede svart, og svaret beholdes.
+        config.routes.error(404, "*", ctx -> {
+            if (ctx.path().startsWith("/api/") && ctx.endpoints().list().isEmpty()) {
+                ctx.json(new LoginResult(false, "Not found."));
+            }
+        });
+    }
+
+    /**
+     * Ruter for kursvisning (S-012) og påmelding (S-013).
+     * Egen metode ved siden av configure(), så testene for innlogging ikke trenger kurs- og påmeldingsregistre.
+     */
+    static void registerCourseRoutes(JavalinConfig config, CourseController courseController,
+                                     EnrollmentController enrollmentController) {
+        config.routes.get("/api/courses", courseController::getCourses);
+        config.routes.post("/api/enrollments", enrollmentController::enroll);
+    }
+
+    /**
+     * S-017: redigering av profil. Egen metode ved siden av configure(), så de eksisterende testene
+     * for innlogging, validering og feilhåndtering ikke trenger en UserController.
+     */
+    static void registerUserRoutes(JavalinConfig config, UserController userController) {
+        config.routes.put("/api/user/update", userController::updateProfile);
+    }
+
+    /**
+     * S-006: Javalins standard JSON-oppsett, men tall og true/false godtas ikke lenger i tekstfelt
+     * (f.eks. {"password": 12345678}). Da kaster bodyAsClass, og controllerne svarer 400 "Invalid request.".
+     * Gjelder bare felter av typen String. Felter som int og boolean oppfører seg som før.
+     */
+    private static JavalinJackson createJsonMapper() {
+        return new JavalinJackson().updateMapper(mapper -> mapper.coercionConfigFor(LogicalType.Textual)
+                .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail));
     }
 
     /**

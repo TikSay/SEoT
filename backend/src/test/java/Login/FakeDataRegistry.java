@@ -1,5 +1,10 @@
 package Login;
 
+import Login.ConsoleResetCodeSender.User;
+import Login.ConsoleResetCodeSender.UserCredentials;
+import Login.Course.DataRegistry;
+import Login.Password.ResetPassword.PasswordReset;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.Instant;
@@ -130,6 +135,24 @@ public class FakeDataRegistry implements DataRegistry {
         }
         resetsByUserId.remove(userId);
     }
+
+    @Override
+    public void updateUser(int userId, String fornavn, String etternavn, String email, String lokallag) {
+        for (Map.Entry<String, UserCredentials> entry : usersByEmail.entrySet()) {
+            User oldUser = entry.getValue().getUser();
+            if (oldUser.getId() == userId) {
+                User updatedUser = new User(userId, oldUser.getUsername(), email, fornavn, etternavn, lokallag);
+                String oldEmail = oldUser.getEmail();
+                UserCredentials credentials = new UserCredentials(updatedUser, entry.getValue().getPasswordHash());
+                if (!oldEmail.equals(email)) {
+                    usersByEmail.remove(oldEmail);
+                }
+                usersByEmail.put(email, credentials);
+                return;
+            }
+        }
+    }
+
 
     public int getCallCount() {
         return callCount;
