@@ -1,5 +1,7 @@
 # Østfolds husflidslag - Nettside
 Prosjektet er basert på å lage en ny og bedre løsning til applikasjonen. Frontend er laget i CSS, JavaScript og React. Backend er implementert i Java (Javalin) og byggeverktøyet Maven med databasen MySQL.
+## Setup
+For å prøve ut nettsiden må sensor legge db.properties lagt i vedlegg for å få koblet seg til Gruppens skoleserver.
 
 # Brukergrensesnitt
 Nettsiden skal vær informerende og enkelt å navigere
