@@ -22,13 +22,16 @@ Nettsiden skal vær informerende og enkelt å navigere
 # 4 KALENDER
 <img width="1920" height="1575" alt="Screenshot 2026-11-19 at 21-25-29 Østfolds Husflidslag" src="https://github.com/user-attachments/assets/03bf22e9-b172-4979-947b-eaf26c095b99" />
 
-# 5 KONTO ENDRING
+# 5 KURS INFORMASJON
+<img width="1024" height="991" alt="image" src="https://github.com/user-attachments/assets/622f6069-21ad-425a-9130-49829ff6b311" />
+
+# 6 KONTO ENDRING
 <img width="1240" height="1134" alt="Screenshot 2026-11-19 at 21-26-29 Østfolds Husflidslag" src="https://github.com/user-attachments/assets/4fbaaa7f-cf3c-4304-9775-47c653608966" />
 
-# 6 GLEMT PASSORD
+# 7 GLEMT PASSORD
 <img width="1240" height="1134" alt="Screenshot 2026-11-19 at 21-26-46 Østfolds Husflidslag" src="https://github.com/user-attachments/assets/f7658e51-b15a-4073-b74c-73d20932424e" />
 
-# 7 KONTAKT OSS
+# 8 KONTAKT OSS
 <img width="1240" height="1134" alt="Screenshot 2026-11-19 at 21-26-59 Østfolds Husflidslag" src="https://github.com/user-attachments/assets/95f1c2ac-43f8-4bdc-bf63-deab9670d6eb" />
 
 
